@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=/" />
+    <script>
+      // Preserve the path and redirect to index.html
+      ;(function () {
+        var redirect = sessionStorage.getItem('redirect')
+        if (redirect) {
+          sessionStorage.removeItem('redirect')
+          window.location.replace(redirect)
+        } else {
+          var path = window.location.pathname
+          sessionStorage.setItem('redirect', path)
+          window.location.replace('/')
+        }
+      })()
+    </script>
+  </head>
+  <body></body>
+</html>
