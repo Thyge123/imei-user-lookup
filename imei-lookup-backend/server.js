@@ -143,7 +143,7 @@ app.post('/api/users', upload.single('picture'), (req, res) => {
   // Handle profile picture if provided
   if (req.file) {
     // If a file is uploaded, set the picture URL to the uploaded file's path
-    user.picture = `http://localhost:${port}/uploads/${req.file.filename}`
+    user.picture = `http://https://imei-lookup-backend.onrender.com/api/uploads/${req.file.filename}`
   } else if (req.body.webAddress) {
     // If a web address is provided, set the picture URL to the web address
     user.picture = req.body.webAddress
@@ -237,7 +237,7 @@ app.post('/api/users/:id/update-picture', upload.single('picture'), (req, res) =
     // Check if the user is found
     if (req.file) {
       // If a file is uploaded, set the picture URL to the uploaded file's path
-      user.picture = `http://localhost:${port}/uploads/${req.file.filename}`
+      user.picture = `https://imei-lookup-backend.onrender.com/api/uploads/${req.file.filename}`
     } else if (req.body.webAddress) {
       // If a web address is provided, set the picture URL to the web address
       user.picture = req.body.webAddress
@@ -260,33 +260,10 @@ app.post('/api/users/:id/update-picture', upload.single('picture'), (req, res) =
   }
 })
 
-/*
-// Endpoint to handle picture upload
-app.post('/api/users/:imei/picture', upload.single('picture'), (req, res) => {
-  const imei = req.params.imei // Get the IMEI from the request parameters
-  const user = users.find((u) => u.imei === imei) // Find the user with the specified IMEI
-
-  if (user) {
-    // Check if the user is found
-    user.picture = `http://localhost:${port}/uploads/${req.file.filename}` // Set the picture URL
-    res.json({ message: 'Picture uploaded successfully', picture: user.picture }) // Return a success message
-  } else {
-    // Delete the uploaded file if user is not found
-    const fs = require('fs')
-    fs.unlink(req.file.path, (err) => {
-      if (err) {
-        console.error('Error deleting file:', err)
-      }
-    })
-    res.status(404).json({ message: 'User not found' })
-  }
-})
-*/
-
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`)
+  console.log(`Server running`)
 })
