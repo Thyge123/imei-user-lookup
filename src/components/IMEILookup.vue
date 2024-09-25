@@ -50,10 +50,10 @@
               {{ search }}
               <button type="button" class="delete-btn" @click.stop="removeSearch(search)">×</button>
             </li>
-            <button @click="RouteAddUser" class="add-user-btn">Opret ny</button>
           </transition-group>
         </div>
       </transition>
+      <button @click="RouteAddUser" class="add-user-btn">Opret ny</button>
     </div>
   </div>
 </template>
@@ -264,6 +264,10 @@ input:not(:placeholder-shown) + label {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.add-user-btn {
+  margin-top: 10px;
 }
 
 .submit-btn:hover:not(:disabled) {
