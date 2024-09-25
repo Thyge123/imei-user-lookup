@@ -232,17 +232,20 @@ app.put('/api/users/:id', (req, res) => {
   }
 })
 
-//Endpoint to get all uploaded files
-app.get('/uploads'),
-  (req, res) => {
-    const directoryPath = path.join(__dirname, 'uploads')
-    fs.readdir(directoryPath, function (err, files) {
-      if (err) {
-        return console.log('Unable to scan directory: ' + err)
-      }
-      res.json(files)
-    })
-  }
+// Endpoint to get all uploaded files
+app.get('/api/uploads', (req, res) => {
+  const uploadsDir = path.join(__dirname, 'uploads')
+
+  fs.readdir(uploadsDir, (err, files) => {
+    if (err) {
+      console.error('Error reading uploads directory:', err)
+      return res.status(500).json({ message: 'Internal server error' })
+    }
+
+    // Return the list of filenames
+    res.json(files)
+  })
+})
 
 app.post('/api/users/:id/update-picture', upload.single('picture'), (req, res) => {
   let id = req.params.id // Get the IMEI from the request parameters
