@@ -30,48 +30,86 @@
       <div class="form-grid">
         <div class="form-row">
           <label for="model">Model</label>
-          <input id="model" type="text" v-model="user.model" />
+          <input id="model" type="text" v-model="user.model" @input="validateModel" />
+          <span v-if="errors.model" class="error">{{ errors.model }}</span>
         </div>
         <div class="form-row">
           <label for="imei">IMEI-/Serienummer</label>
           <input id="imei" type="text" v-model="user.imei" @input="validateIMEI" />
+          <span v-if="errors.imei" class="error">{{ errors.imei }}</span>
         </div>
         <div class="form-row">
           <label for="agreedPrice">Aftalt pris (DKK)</label>
-          <input id="agreedPrice" type="text" v-model="user.agreedPrice" />
+          <input
+            id="agreedPrice"
+            type="text"
+            v-model="user.agreedPrice"
+            @input="validateAgreedPrice"
+          />
+          <span v-if="errors.agreedPrice" class="error">{{ errors.agreedPrice }}</span>
         </div>
         <div class="form-row">
           <label for="notes">Bemærkninger</label>
-          <textarea id="notes" v-model="user.notes"></textarea>
+          <textarea id="notes" v-model="user.notes" @input="validateNotes"></textarea>
+          <span v-if="errors.notes" class="error">{{ errors.notes }}</span>
         </div>
         <div class="form-row">
           <label for="birthday">Kundens fødselsdato (ddmmåå)</label>
-          <input id="birthday" type="date" v-model="user.birthday" class="modern-date-input" />
+          <input
+            id="birthday"
+            type="date"
+            v-model="user.birthday"
+            class="modern-date-input"
+            @input="validateBirthday"
+          />
+          <span v-if="errors.birthday" class="error">{{ errors.birthday }}</span>
         </div>
         <div class="form-row">
           <label for="phoneNumber">Kundens tlf.nummer</label>
-          <input id="phoneNumber" type="text" v-model="user.phoneNumber" />
+          <input
+            id="phoneNumber"
+            type="text"
+            v-model="user.phoneNumber"
+            @input="validatePhoneNumber"
+          />
+          <span v-if="errors.phoneNumber" class="error">{{ errors.phoneNumber }}</span>
         </div>
         <div class="form-row bank-details">
           <label>Kundens bankkonto</label>
           <div class="bank-inputs">
-            <input type="text" v-model="user.bankReg" placeholder="Reg. nr." />
+            <input
+              type="text"
+              v-model="user.bankReg"
+              placeholder="Reg. nr."
+              @input="validateBankReg"
+            />
             <input
               type="text"
               v-model="user.bankAccount"
               placeholder="Konto.nr."
               class="long-input"
               :class="{ copied: copiedField === 'bankAccount' }"
+              @input="validateBankAccount"
             />
           </div>
+          <span v-if="errors.bankReg" class="error">{{ errors.bankReg }}</span>
+          <span v-if="errors.bankAccount" class="error">{{ errors.bankAccount }}</span>
         </div>
         <div class="form-row full-width">
           <label for="name">Kundens navn (blokbogstaver)</label>
-          <input id="name" type="text" v-model="user.name" class="uppercase" />
+          <input
+            id="name"
+            type="text"
+            v-model="user.name"
+            class="uppercase"
+            @input="validateName"
+          />
+          <span v-if="errors.name" class="error">{{ errors.name }}</span>
         </div>
         <div class="form-row">
           <label for="date">Dato</label>
-          <input id="date" type="date" v-model="user.date" />
+          <input id="date" type="date" v-model="user.date" @input="validateDate" />
+          <span v-if="errors.date" class="error">{{ errors.date }}</span>
         </div>
         <br />
         <div class="form-row signature full-width">
@@ -104,6 +142,9 @@
     <div v-else-if="loading" class="loading" aria-live="polite">
       <div class="spinner" aria-hidden="true"></div>
       <p>Indlæser brugeroplysninger...</p>
+    </div>
+    <div v-else class="error" aria-live="polite">
+      <p>{{ errorMessage }}</p>
     </div>
     <Toast
       v-show="error"
@@ -147,70 +188,105 @@ export default {
       imeiError: '',
       success: false,
       errorMessage: '',
-      imageUrl: ''
+      imageUrl: '',
+      errors: {
+        imei: '',
+        model: '',
+        agreedPrice: '',
+        notes: '',
+        birthday: '',
+        phoneNumber: '',
+        bankReg: '',
+        bankAccount: '',
+        name: '',
+        date: ''
+      }
     }
   },
   methods: {
+    async checkImeiExists(imei) {
+      try {
+        const response = await axios.get(
+          `https://imei-lookup-backend.onrender.com/api/users/${imei}`
+        )
+        return response.data ? true : false
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          return false
+        } else {
+          throw new Error('Error checking IMEI: ' + error.message)
+        }
+      }
+    },
+    async fetchUsers() {
+      try {
+        const response = await axios.get('https://imei-lookup-backend.onrender.com/api/users')
+        return Array.isArray(response.data) ? response.data : []
+      } catch (error) {
+        throw new Error('Error fetching users: ' + error.message)
+      }
+    },
+    getHighestUserId(users) {
+      return users.reduce((maxId, user) => Math.max(maxId, user.id), 0)
+    },
+    createFormData(user, file, imageUrl) {
+      const formData = new FormData()
+      formData.append('id', user.id)
+      formData.append('imei', user.imei)
+      formData.append('name', user.name)
+      formData.append('model', user.model)
+      formData.append('agreedPrice', user.agreedPrice)
+      formData.append('notes', user.notes)
+      formData.append('birthday', user.birthday)
+      formData.append('phoneNumber', user.phoneNumber)
+      formData.append('bankReg', user.bankReg)
+      formData.append('bankAccount', user.bankAccount)
+      formData.append('date', user.date)
+
+      if (file) {
+        formData.append('picture', file)
+      } else if (imageUrl) {
+        formData.append('webAddress', imageUrl)
+      }
+
+      return formData
+    },
     async addUser() {
+      // Validate the form
+      if (!this.validateForm()) {
+        console.log(this.errors)
+        this.error = true
+        this.errorMessage = 'Please correct the errors in the form.'
+        this.$refs.toast.show()
+        return
+      }
+
       try {
         // Check if IMEI already exists
-        try {
-          const imeiResponse = await axios.get(
-            `https://imei-lookup-backend.onrender.com/api/users/${this.user.imei}`
-          )
-          if (imeiResponse.data) {
-            this.error = true
-            this.errorMessage = 'IMEI already exists'
-            this.imeiError = 'IMEI already exists'
-            this.$refs.toast.show()
-            return // Return early if IMEI exists
-          }
-        } catch (error) {
-          if (error.response && error.response.status === 404) {
-            // IMEI does not exist, proceed with adding the user
-            console.log('IMEI does not exist, proceeding with user addition')
-          } else {
-            console.error('Error checking IMEI:', error)
-            this.error = true
-            this.errorMessage = error.message
-            return
-          }
+        const imeiExists = await this.checkImeiExists(this.user.imei)
+        if (imeiExists) {
+          this.error = true
+          this.errorMessage = 'IMEI already exists'
+          this.$refs.toast.show()
+          return
         }
+
         // Get all users
-        const usersResponse = await axios.get('https://imei-lookup-backend.onrender.com/api/users')
-        const users = Array.isArray(usersResponse.data) ? usersResponse.data : []
+        const users = await this.fetchUsers()
 
         // Determine the highest id
-        const highestId = users.reduce((maxId, user) => Math.max(maxId, user.id), 0)
+        const highestId = this.getHighestUserId(users)
 
         // Set the new user's id
         this.user.id = highestId + 1
 
         // Create form data for the user
-        const formData = new FormData()
-        formData.append('id', this.user.id)
-        formData.append('imei', this.user.imei)
-        formData.append('name', this.user.name)
-        formData.append('model', this.user.model)
-        formData.append('agreedPrice', this.user.agreedPrice)
-        formData.append('notes', this.user?.notes)
-        formData.append('birthday', this.user.birthday)
-        formData.append('phoneNumber', this.user.phoneNumber)
-        formData.append('bankReg', this.user.bankReg)
-        formData.append('bankAccount', this.user.bankAccount)
-        formData.append('date', this.user.date)
+        const file = this.$refs.fileInput.files.length > 0 ? this.$refs.fileInput.files[0] : null
+        const formData = this.createFormData(this.user, file, this.imageUrl)
 
-        // Handle image upload if a file is selected
-        if (this.$refs.fileInput.files.length > 0) {
-          const file = this.$refs.fileInput.files[0]
-          formData.append('picture', file)
-        } else if (this.imageUrl) {
-          // Handle image URL if provided
-          formData.append('webAddress', this.imageUrl)
-        }
-
+        // Add the user
         const response = await axios.post(
-          'https://imei-lookup-backend.onrender.com/api/users/api/users',
+          'https://imei-lookup-backend.onrender.com/api/users',
           formData,
           {
             headers: {
@@ -234,6 +310,7 @@ export default {
         console.error('Error adding user:', error)
         this.error = true
         this.errorMessage = error.message
+        this.$refs.toast.show()
       }
     },
     goBack() {
@@ -246,6 +323,84 @@ export default {
       } else {
         this.imeiError = ''
       }
+    },
+    validateModel() {
+      if (!this.user.model) {
+        this.errors.model = 'Model is required'
+      } else {
+        this.errors.model = ''
+      }
+    },
+    validateAgreedPrice() {
+      if (!this.user.agreedPrice || isNaN(this.user.agreedPrice)) {
+        this.errors.agreedPrice = 'Agreed price must be a number'
+      } else {
+        this.errors.agreedPrice = ''
+      }
+    },
+    validateNotes() {
+      if (!this.user.notes) {
+        this.errors.notes = 'Notes are required'
+      } else {
+        this.errors.notes = ''
+      }
+    },
+    validateBirthday() {
+      if (!this.user.birthday) {
+        this.errors.birthday = 'Birthday is required'
+      } else {
+        this.errors.birthday = ''
+      }
+    },
+    validatePhoneNumber() {
+      const phonePattern = /^[0-9]{8}$/
+      if (!phonePattern.test(this.user.phoneNumber)) {
+        this.errors.phoneNumber = 'Phone number must be an 8-digit number'
+      } else {
+        this.errors.phoneNumber = ''
+      }
+    },
+    validateBankReg() {
+      if (!this.user.bankReg) {
+        this.errors.bankReg = 'Bank registration number is required'
+      } else {
+        this.errors.bankReg = ''
+      }
+    },
+    validateBankAccount() {
+      if (!this.user.bankAccount) {
+        this.errors.bankAccount = 'Bank account number is required'
+      } else {
+        this.errors.bankAccount = ''
+      }
+    },
+    validateName() {
+      if (!this.user.name) {
+        this.errors.name = 'Name is required'
+      } else {
+        this.errors.name = ''
+      }
+    },
+    validateDate() {
+      if (!this.user.date) {
+        this.errors.date = 'Date is required'
+      } else {
+        this.errors.date = ''
+      }
+    },
+    validateForm() {
+      this.validateIMEI()
+      this.validateModel()
+      this.validateAgreedPrice()
+      this.validateNotes()
+      this.validateBirthday()
+      this.validatePhoneNumber()
+      this.validateBankReg()
+      this.validateBankAccount()
+      this.validateName()
+      this.validateDate()
+
+      return Object.values(this.errors).every((error) => !error)
     },
     triggerFileInput() {
       this.$refs.fileInput.click()
