@@ -143,7 +143,7 @@ app.post('/api/users', upload.single('picture'), (req, res) => {
   // Handle profile picture if provided
   if (req.file) {
     // If a file is uploaded, set the picture URL to the uploaded file's path
-    user.picture = `http://https://imei-lookup-backend.onrender.com/api/uploads/${req.file.filename}`
+    user.picture = `http://https://imei-lookup-backend.onrender.com/uploads/${req.file.filename}`
   } else if (req.body.webAddress) {
     // If a web address is provided, set the picture URL to the web address
     user.picture = req.body.webAddress
@@ -237,7 +237,7 @@ app.post('/api/users/:id/update-picture', upload.single('picture'), (req, res) =
     // Check if the user is found
     if (req.file) {
       // If a file is uploaded, set the picture URL to the uploaded file's path
-      user.picture = `https://imei-lookup-backend.onrender.com/api/uploads/${req.file.filename}`
+      user.picture = `https://imei-lookup-backend.onrender.com/uploads/${req.file.filename}`
     } else if (req.body.webAddress) {
       // If a web address is provided, set the picture URL to the web address
       user.picture = req.body.webAddress
