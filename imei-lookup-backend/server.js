@@ -279,6 +279,20 @@ app.post('/api/users/:id/update-picture', upload.single('picture'), (req, res) =
   }
 })
 
+// Endpoint to delete a user by IMEI
+app.delete('/api/users/:imei', (req, res) => {
+  const imei = req.params.imei // Get the IMEI from the request parameters
+  const userIndex = users.findIndex((u) => u.imei === imei) // Find the index of the user with the specified IMEI
+
+  if (userIndex !== -1) {
+    users.splice(userIndex, 1) // Remove the user from the users array
+    saveUsersToFile() // Save the users array to the file
+    res.json({ message: 'User deleted successfully' }) // Return a success message
+  } else {
+    res.status(404).json({ message: 'User not found' }) // Return a 404 error if the user is not found
+  }
+})
+
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 

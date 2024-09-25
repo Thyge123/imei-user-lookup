@@ -14,10 +14,10 @@
       </div>
       <div class="update-image-container">
         <div class="update-image-buttons">
-          <button @click="triggerFileInput" class="update-image-btn">Upload Image</button>
+          <button @click="triggerFileInput" class="update-image-btn">Upload Billede</button>
           <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none" />
         </div>
-        <label for="ImageURL">Image URL:</label>
+        <label for="ImageURL">Billede URL:</label>
         <input
           type="text"
           v-model="user.picture"
@@ -66,7 +66,7 @@
           </div>
           <div class="form-row">
             <label for="notes">Bemærkninger</label>
-            <textarea id="notes" v-model="user.notes" @input="validateNotes"></textarea>
+            <textarea id="notes" v-model="user.notes"></textarea>
             <span v-if="errors.notes" class="error">{{ errors.notes }}</span>
           </div>
           <div class="form-row">
@@ -186,7 +186,6 @@ export default {
         name: null,
         model: null,
         agreedPrice: 0,
-        notes: null,
         birthday: null,
         phoneNumber: null,
         bankReg: null,
@@ -207,7 +206,6 @@ export default {
         imei: '',
         model: '',
         agreedPrice: '',
-        notes: '',
         birthday: '',
         phoneNumber: '',
         bankReg: '',
@@ -250,7 +248,7 @@ export default {
       formData.append('name', user.name)
       formData.append('model', user.model)
       formData.append('agreedPrice', user.agreedPrice)
-      formData.append('notes', user.notes)
+      formData.append('notes', user?.notes)
       formData.append('birthday', user.birthday)
       formData.append('phoneNumber', user.phoneNumber)
       formData.append('bankReg', user.bankReg)
@@ -357,13 +355,6 @@ export default {
         this.errors.agreedPrice = ''
       }
     },
-    validateNotes() {
-      if (!this.user.notes) {
-        this.errors.notes = 'Notes are required'
-      } else {
-        this.errors.notes = ''
-      }
-    },
     validateBirthday() {
       if (!this.user.birthday) {
         this.errors.birthday = 'Birthday is required'
@@ -411,7 +402,6 @@ export default {
       this.validateIMEI()
       this.validateModel()
       this.validateAgreedPrice()
-      this.validateNotes()
       this.validateBirthday()
       this.validatePhoneNumber()
       this.validateBankReg()
@@ -751,7 +741,6 @@ input:focus {
 }
 
 .input-error input,
-.input-error textarea,
 .input-error input[type='date'] {
   border: 2px solid #e74c3c;
 }

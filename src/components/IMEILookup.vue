@@ -13,7 +13,7 @@
             @input="debouncedValidateInput"
             aria-describedby="imeiHelp"
           />
-          <label for="imei">IMEI Number</label>
+          <label for="imei">IMEI Nummer</label>
           <button type="button" class="clear-btn" @click="clearInput" v-if="imei.length > 0">
             ×
           </button>
@@ -22,7 +22,7 @@
           </transition>
         </div>
         <button type="submit" :disabled="isLoading || !isValidIMEI" class="submit-btn">
-          <span v-if="!isLoading">Lookup User</span>
+          <span v-if="!isLoading">Søg</span>
           <div v-else class="spinner"></div>
         </button>
       </form>
@@ -30,13 +30,13 @@
       <transition name="slide-fade">
         <div v-if="error" class="error-message">
           {{ error }}
-          <button @click="lookupUser" class="retry-btn">Retry</button>
+          <button @click="lookupUser" class="retry-btn">Prøv igen</button>
         </div>
       </transition>
 
       <transition name="fade">
         <div class="recent-searches" v-if="recentSearches.length > 0">
-          <h2>Recent Searches</h2>
+          <h2>Seneste Søgninger</h2>
           <transition-group name="list" tag="ul">
             <li
               v-for="search in recentSearches"
@@ -50,7 +50,7 @@
               {{ search }}
               <button type="button" class="delete-btn" @click.stop="removeSearch(search)">×</button>
             </li>
-            <button @click="RouteAddUser" class="add-user-btn">Add User</button>
+            <button @click="RouteAddUser" class="add-user-btn">Opret ny</button>
           </transition-group>
         </div>
       </transition>

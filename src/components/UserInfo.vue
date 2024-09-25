@@ -21,11 +21,11 @@
       <div class="update-image-container">
         <div class="update-image-buttons">
           <button v-if="user.picture" @click="triggerFileInput" class="update-image-btn">
-            Update Image
+            Opdater Billede
           </button>
           <input type="file" ref="fileInput" @change="updateImage" style="display: none" />
         </div>
-        <label for="ImageURL">Image URL:</label>
+        <label for="ImageURL">Billede URL:</label>
         <input
           type="text"
           v-model="user.picture"
@@ -225,9 +225,14 @@
           hovedgade 68, 2630 Taastrup
         </p>
       </div>
-      <button @click="goBack" class="back-btn" aria-label="Tilbage til søgning">
-        <span class="back-icon">←</span> Tilbage til søgning
-      </button>
+      <div class="buttons">
+        <button @click="goBack" class="back-btn" aria-label="Tilbage til søgning">
+          <span class="back-icon">← Tilbage til søgning</span>
+        </button>
+        <button @click="deleteUser" class="delete-btn" aria-label="Slet bruger">
+          <span class="delete-icon">🗑 Slet bruger</span>
+        </button>
+      </div>
     </div>
     <div v-else-if="loading" class="loading" aria-live="polite">
       <div class="spinner" aria-hidden="true"></div>
@@ -305,6 +310,19 @@ export default {
         )
       } catch (error) {
         console.error('Error updating user:', error)
+      }
+    },
+    async deleteUser() {
+      if (confirm('Er du sikker på, at du vil slette denne bruger?')) {
+        try {
+          await axios.delete(`https://imei-lookup-backend.onrender.com/api/users/${this.user.imei}`)
+          this.loading = true
+          setTimeout(() => {
+            this.$router.push({ name: 'IMEILookup' })
+          }, 3000)
+        } catch (error) {
+          console.error('Error deleting user:', error)
+        }
       }
     },
     goBack() {
@@ -585,7 +603,8 @@ textarea:focus {
   margin-top: 10px;
 }
 
-.back-btn {
+.back-btn,
+.delete-btn {
   margin-top: 24px;
   padding: 12px 24px;
   background-color: #3498db;
@@ -596,14 +615,23 @@ textarea:focus {
   font-size: 16px;
   transition: all 0.3s ease;
   display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.back-btn:hover {
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.back-btn:hover,
+.delete-btn:hover {
   background-color: #2980b9;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.delete-btn {
+  background-color: #e74c3c !important;
 }
 
 .back-icon {
