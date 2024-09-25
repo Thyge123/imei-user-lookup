@@ -171,19 +171,22 @@ app.post('/api/users', upload.single('picture'), (req, res) => {
 
 //Endpoint get user by Id
 app.get('/api/users/:id', (req, res) => {
-  let id = req.params.id // Get the IMEI from the request parameters
+  let id = req.params.id // Get the Id from the request parameters
+  //convert id to number
   id = Number(id)
   try {
-    if (fs.existsSync('users.json')) {
+    if (fs.existsSync(usersFilePath)) {
       // Check if the users file exists
       const usersData = fs.readFileSync(usersFilePath, 'utf8') // Read the users file
       const users = JSON.parse(usersData) // Parse the JSON data
-      const user = users.find((u) => u.id === id) // Find the user with the specified IMEI
+      const user = users.find((u) => u.id === id) // Find the user with the specified Id
       if (user) {
         res.json(user) // Return the user as JSON
       } else {
         res.status(404).json({ message: 'User not found' }) // Return a 404 error if the user is not found
       }
+    } else {
+      res.status(404).json({ message: 'Users file not found' }) // Return a 404 error if the users file is not found
     }
   } catch (error) {
     // Catch any errors that occur
@@ -230,7 +233,7 @@ app.put('/api/users/:id', (req, res) => {
 })
 
 //Endpoint to get all uploaded files
-app.get('https://imei-lookup-backend.onrender.com/uploads'),
+app.get('/uploads'),
   (req, res) => {
     const directoryPath = path.join(__dirname, 'uploads')
     fs.readdir(directoryPath, function (err, files) {
