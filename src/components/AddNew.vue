@@ -1,6 +1,6 @@
 <template>
   <div class="user-info-page">
-    <div class="card" v-if="!loading && !error">
+    <div class="card" v-if="!loading">
       <div class="header">
         <img
           src="https://telegiganten.dk/wp-content/uploads/2023/12/cropped-logo-Telegiganten.png.webp"
@@ -36,6 +36,7 @@
         <div class="form-row">
           <label for="imei">IMEI-/Serienummer</label>
           <input id="imei" type="text" v-model="user.imei" @input="validateIMEI" />
+          <div class="input-status" v-if="imei.length > 0">{{ imei.length }}/15</div>
           <span v-if="errors.imei" class="error">{{ errors.imei }}</span>
         </div>
         <div class="form-row">
@@ -116,7 +117,7 @@
           <label>Underskrift</label>
           <div class="signature-box">
             <img :src="user.signature" alt="User Signature" v-if="user.signature" />
-            <span v-else>Klik for at se underskrift</span>
+            <span v-else>Klik f or at se underskrift</span>
           </div>
         </div>
       </div>
@@ -315,7 +316,9 @@ export default {
     },
     validateIMEI() {
       const imeiPattern = /^[0-9]{15}$/
-      if (!imeiPattern.test(this.user.imei)) {
+      if (!this.user.imei) {
+        this.imeiError = 'IMEI is required'
+      } else if (!imeiPattern.test(this.user.imei)) {
         this.imeiError = 'IMEI must be a 15-digit number'
       } else {
         this.imeiError = ''
@@ -455,6 +458,15 @@ export default {
 
 .logo {
   height: auto;
+}
+
+.input-status {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #999;
 }
 
 .profile-pic {
@@ -704,13 +716,8 @@ textarea:focus {
   margin-right: 8px;
 }
 
-.loading,
 .error {
-  text-align: center;
-  padding: 40px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  color: red;
 }
 
 .spinner {
@@ -799,16 +806,6 @@ textarea:focus,
 .back-btn:focus {
   outline: 2px solid #3498db;
   outline-offset: 2px;
-}
-
-/* Improve loading and error states */
-.loading,
-.error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
 }
 
 /* Add a subtle hover effect to the back button */
