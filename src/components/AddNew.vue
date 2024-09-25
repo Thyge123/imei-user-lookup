@@ -27,89 +27,106 @@
         />
       </div>
       <br />
-      <div class="form-grid">
-        <div class="form-row">
-          <label for="model">Model</label>
-          <input id="model" type="text" v-model="user.model" @input="validateModel" />
-          <span v-if="errors.model" class="error">{{ errors.model }}</span>
-        </div>
-        <div class="form-row">
-          <label for="imei">IMEI-/Serienummer</label>
-          <input id="imei" type="text" v-model="user.imei" @input="validateIMEI" />
-          <span v-if="errors.imei" class="error">{{ errors.imei }}</span>
-        </div>
-        <div class="form-row">
-          <label for="agreedPrice">Aftalt pris (DKK)</label>
-          <input
-            id="agreedPrice"
-            type="text"
-            v-model="user.agreedPrice"
-            @input="validateAgreedPrice"
-          />
-          <span v-if="errors.agreedPrice" class="error">{{ errors.agreedPrice }}</span>
-        </div>
-        <div class="form-row">
-          <label for="notes">Bemærkninger</label>
-          <textarea id="notes" v-model="user.notes" @input="validateNotes"></textarea>
-          <span v-if="errors.notes" class="error">{{ errors.notes }}</span>
-        </div>
-        <div class="form-row">
-          <label for="birthday">Kundens fødselsdato (ddmmåå)</label>
-          <input
-            id="birthday"
-            type="date"
-            v-model="user.birthday"
-            class="modern-date-input"
-            @input="validateBirthday"
-          />
-          <span v-if="errors.birthday" class="error">{{ errors.birthday }}</span>
-        </div>
-        <div class="form-row">
-          <label for="phoneNumber">Kundens tlf.nummer</label>
-          <input
-            id="phoneNumber"
-            type="text"
-            v-model="user.phoneNumber"
-            @input="validatePhoneNumber"
-          />
-          <span v-if="errors.phoneNumber" class="error">{{ errors.phoneNumber }}</span>
-        </div>
-        <div class="form-row bank-details">
-          <label>Kundens bankkonto</label>
-          <div class="bank-inputs">
-            <input
-              type="text"
-              v-model="user.bankReg"
-              placeholder="Reg. nr."
-              @input="validateBankReg"
-            />
-            <input
-              type="text"
-              v-model="user.bankAccount"
-              placeholder="Konto.nr."
-              class="long-input"
-              :class="{ copied: copiedField === 'bankAccount' }"
-              @input="validateBankAccount"
-            />
+      <div class="input-group" :class="{ 'input-error': error }">
+        <div class="form-grid">
+          <div class="form-row">
+            <label for="model">Model</label>
+            <input id="model" type="text" v-model="user.model" @input="validateModel" />
+            <span v-if="errors.model" class="error">{{ errors.model }}</span>
           </div>
-          <span v-if="errors.bankReg" class="error">{{ errors.bankReg }}</span>
-          <span v-if="errors.bankAccount" class="error">{{ errors.bankAccount }}</span>
-        </div>
-        <div class="form-row full-width">
-          <label for="name">Kundens navn (blokbogstaver)</label>
-          <input
-            id="name"
-            type="text"
-            v-model="user.name"
-            class="uppercase"
-            @input="validateName"
-          />
-          <span v-if="errors.name" class="error">{{ errors.name }}</span>
-        </div>
-        <div class="form-row">
-          <label for="date">Dato</label>
-          <input id="date" type="date" v-model="user.date" @input="validateDate" />
-          <span v-if="errors.date" class="error">{{ errors.date }}</span>
+          <div class="form-row">
+            <label for="imei">IMEI-/Serienummer</label>
+            <input
+              type="text"
+              id="imei"
+              v-model="user.imei"
+              :disabled="isLoading"
+              required
+              @input="debouncedValidateInput"
+              aria-describedby="imeiHelp"
+            />
+            <button type="button" class="clear-btn" @click="clearInput" v-if="user.imei.length > 0">
+              ×
+            </button>
+            <transition name="fade">
+              <div class="input-status" v-if="user.imei.length > 0">{{ user.imei.length }}/15</div>
+            </transition>
+            <span v-if="errors.imei" class="error">{{ errors.imei }}</span>
+          </div>
+
+          <div class="form-row">
+            <label for="agreedPrice">Aftalt pris (DKK)</label>
+            <input
+              id="agreedPrice"
+              type="text"
+              v-model="user.agreedPrice"
+              @input="validateAgreedPrice"
+            />
+            <span v-if="errors.agreedPrice" class="error">{{ errors.agreedPrice }}</span>
+          </div>
+          <div class="form-row">
+            <label for="notes">Bemærkninger</label>
+            <textarea id="notes" v-model="user.notes" @input="validateNotes"></textarea>
+            <span v-if="errors.notes" class="error">{{ errors.notes }}</span>
+          </div>
+          <div class="form-row">
+            <label for="birthday">Kundens fødselsdato (ddmmåå)</label>
+            <input
+              id="birthday"
+              type="date"
+              v-model="user.birthday"
+              class="modern-date-input"
+              @input="validateBirthday"
+            />
+            <span v-if="errors.birthday" class="error">{{ errors.birthday }}</span>
+          </div>
+          <div class="form-row">
+            <label for="phoneNumber">Kundens tlf.nummer</label>
+            <input
+              id="phoneNumber"
+              type="text"
+              v-model="user.phoneNumber"
+              @input="validatePhoneNumber"
+            />
+            <span v-if="errors.phoneNumber" class="error">{{ errors.phoneNumber }}</span>
+          </div>
+          <div class="form-row bank-details">
+            <label>Kundens bankkonto</label>
+            <div class="bank-inputs">
+              <input
+                type="text"
+                v-model="user.bankReg"
+                placeholder="Reg. nr."
+                @input="validateBankReg"
+              />
+              <input
+                type="text"
+                v-model="user.bankAccount"
+                placeholder="Konto.nr."
+                class="long-input"
+                :class="{ copied: copiedField === 'bankAccount' }"
+                @input="validateBankAccount"
+              />
+            </div>
+            <span v-if="errors.bankReg" class="error">{{ errors.bankReg }}</span>
+            <span v-if="errors.bankAccount" class="error">{{ errors.bankAccount }}</span>
+          </div>
+          <div class="form-row full-width">
+            <label for="name">Kundens navn (blokbogstaver)</label>
+            <input
+              id="name"
+              type="text"
+              v-model="user.name"
+              class="uppercase"
+              @input="validateName"
+            />
+            <span v-if="errors.name" class="error">{{ errors.name }}</span>
+          </div>
+          <div class="form-row">
+            <label for="date">Dato</label>
+            <input id="date" type="date" v-model="user.date" @input="validateDate" />
+            <span v-if="errors.date" class="error">{{ errors.date }}</span>
+          </div>
         </div>
         <br />
         <div class="form-row signature full-width">
@@ -313,14 +330,17 @@ export default {
     goBack() {
       this.$router.push({ name: 'IMEILookup' })
     },
+    clearIMEIInput() {
+      this.user.imei = ''
+    },
     validateIMEI() {
       const imeiPattern = /^[0-9]{15}$/
       if (!this.user.imei) {
-        this.imeiError = 'IMEI is required'
+        this.errors.imei = 'IMEI is required'
       } else if (!imeiPattern.test(this.user.imei)) {
-        this.imeiError = 'IMEI must be a 15-digit number'
+        this.errors.imei = 'IMEI must be a 15-digit number'
       } else {
-        this.imeiError = ''
+        this.errors.imei = ''
       }
     },
     validateModel() {
@@ -420,6 +440,7 @@ export default {
     }
   },
   created() {
+    this.user.imei = ''
     this.loading = false
   }
 }
@@ -457,15 +478,6 @@ export default {
 
 .logo {
   height: auto;
-}
-
-.input-status {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 12px;
-  color: #999;
 }
 
 .profile-pic {
@@ -717,6 +729,63 @@ textarea:focus {
 
 .error {
   color: red;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.input-error input,
+.input-error textarea,
+.input-error input[type='date'] {
+  border: 2px solid #e74c3c;
+}
+
+input:focus + label,
+input:not(:placeholder-shown) + label {
+  top: 0;
+  font-size: 12px;
+  color: #3498db;
+  background-color: #ffffff;
+  padding: 0 5px;
+}
+
+.input-status {
+  position: absolute;
+  right: 15px;
+  top: 55%;
+  font-size: 12px;
+  color: #999;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 50px;
+  top: 50%;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+}
+
+.clear-btn:hover {
+  color: #e74c3c;
 }
 
 .spinner {
