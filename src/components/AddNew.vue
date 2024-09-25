@@ -23,7 +23,7 @@
           v-model="user.picture"
           placeholder="Enter image URL"
           class="image-url-input"
-          @onchange="updateImageUrl"
+          @change="updateImageUrl"
         />
       </div>
       <br />
