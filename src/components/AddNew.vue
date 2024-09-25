@@ -36,7 +36,6 @@
         <div class="form-row">
           <label for="imei">IMEI-/Serienummer</label>
           <input id="imei" type="text" v-model="user.imei" @input="validateIMEI" />
-          <div class="input-status" v-if="imei.length > 0">{{ imei.length }}/15</div>
           <span v-if="errors.imei" class="error">{{ errors.imei }}</span>
         </div>
         <div class="form-row">
