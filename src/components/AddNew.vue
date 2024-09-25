@@ -143,9 +143,6 @@
       <div class="spinner" aria-hidden="true"></div>
       <p>Indlæser brugeroplysninger...</p>
     </div>
-    <div v-else class="error" aria-live="polite">
-      <p>{{ errorMessage }}</p>
-    </div>
     <Toast
       v-show="error"
       ref="toast"
