@@ -171,7 +171,8 @@ app.post('/api/users', upload.single('picture'), (req, res) => {
 
 //Endpoint get user by Id
 app.get('/api/users/:id', (req, res) => {
-  const id = req.params.id // Get the IMEI from the request parameters
+  let id = req.params.id // Get the IMEI from the request parameters
+  id = Number(id)
   try {
     if (fs.existsSync('users.json')) {
       // Check if the users file exists
@@ -227,6 +228,18 @@ app.put('/api/users/:id', (req, res) => {
     res.status(500).json({ message: 'Internal server error' }) // Return a 500 error
   }
 })
+
+//Endpoint to get all uploaded files
+app.get('https://imei-lookup-backend.onrender.com/uploads'),
+  (req, res) => {
+    const directoryPath = path.join(__dirname, 'uploads')
+    fs.readdir(directoryPath, function (err, files) {
+      if (err) {
+        return console.log('Unable to scan directory: ' + err)
+      }
+      res.json(files)
+    })
+  }
 
 app.post('/api/users/:id/update-picture', upload.single('picture'), (req, res) => {
   let id = req.params.id // Get the IMEI from the request parameters
