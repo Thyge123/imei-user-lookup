@@ -88,7 +88,7 @@ export default {
       this.isLoading = true
 
       try {
-        await axios.get(`http://localhost:3000/api/users/${this.imei}`)
+        await axios.get(`https://imei-lookup-backend.onrender.com/api/users/${this.imei}`)
         this.addToRecentSearches(this.imei)
         this.$router.push({ name: 'UserInfo', params: { imei: this.imei } })
         this.imei = ''

@@ -155,7 +155,9 @@ export default {
       try {
         // Check if IMEI already exists
         try {
-          const imeiResponse = await axios.get(`http://localhost:3000/api/users/${this.user.imei}`)
+          const imeiResponse = await axios.get(
+            `https://imei-lookup-backend.onrender.com/api/users/${this.user.imei}`
+          )
           if (imeiResponse.data) {
             this.error = true
             this.errorMessage = 'IMEI already exists'
@@ -175,7 +177,7 @@ export default {
           }
         }
         // Get all users
-        const usersResponse = await axios.get('http://localhost:3000/api/users')
+        const usersResponse = await axios.get('https://imei-lookup-backend.onrender.com/api/users')
         const users = Array.isArray(usersResponse.data) ? usersResponse.data : []
 
         // Determine the highest id
@@ -207,11 +209,15 @@ export default {
           formData.append('webAddress', this.imageUrl)
         }
 
-        const response = await axios.post('http://localhost:3000/api/users', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
+        const response = await axios.post(
+          'https://imei-lookup-backend.onrender.com/api/users/api/users',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
           }
-        })
+        )
 
         // Show success message
         if (response.status === 200) {

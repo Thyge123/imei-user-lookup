@@ -281,7 +281,9 @@ export default {
       this.error = false
       const imei = this.$route.params.imei
       try {
-        const response = await axios.get(`http://localhost:3000/api/users/${imei}`)
+        const response = await axios.get(
+          `https://imei-lookup-backend.onrender.com/api/users/${imei}`
+        )
         if (response && response.data) {
           this.user = response.data
         } else {
@@ -297,7 +299,10 @@ export default {
     // Update user with inline editing
     async updateUser() {
       try {
-        await axios.put(`http://localhost:3000/api/users/${this.user.id}`, this.user)
+        await axios.put(
+          `https://imei-lookup-backend.onrender.com/api/users/${this.user.id}`,
+          this.user
+        )
       } catch (error) {
         console.error('Error updating user:', error)
       }
@@ -338,7 +343,7 @@ export default {
 
       try {
         const response = await axios.post(
-          `http://localhost:3000/api/users/${this.user.id}/update-picture`,
+          `https://imei-lookup-backend.onrender.com/api/users/${this.user.id}/update-picture`,
           formData
         )
         this.user.picture = response.data.picture
@@ -351,7 +356,7 @@ export default {
 
       try {
         const response = await axios.post(
-          `http://localhost:3000/api/users/${this.user.id}/update-picture`,
+          `https://imei-lookup-backend.onrender.com/api/users/${this.user.id}/update-picture`,
           {
             webAddress: this.user.picture
           }
