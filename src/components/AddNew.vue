@@ -14,7 +14,7 @@
       </div>
       <div class="update-image-container">
         <div class="update-image-buttons">
-          <button @click="triggerFileInput" class="update-image-btn">Upload Billede</button>
+          <button @click="triggerFileInput" class="update-image-btn">Upload Image</button>
           <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none" />
         </div>
         <label for="ImageURL">Billede URL:</label>
@@ -363,9 +363,9 @@ export default {
       }
     },
     validatePhoneNumber() {
-      const phonePattern = /^[0-9]{8}$/
+      const phonePattern = /^\+?[0-9 ]+$/
       if (!phonePattern.test(this.user.phoneNumber)) {
-        this.errors.phoneNumber = 'Phone number must be an 8-digit number'
+        this.errors.phoneNumber = 'Phone number must be a valid number'
       } else {
         this.errors.phoneNumber = ''
       }
