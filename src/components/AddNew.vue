@@ -185,7 +185,7 @@ export default {
         phoneNumber: null,
         bankReg: null,
         bankAccount: null,
-        date: null,
+        date: new Date().toISOString().slice(0, 10),
         picture: 'https://icons.veryicon.com/png/o/internet--web/55-common-web-icons/person-4.png',
         signature: null
       },
@@ -640,7 +640,7 @@ label {
 input,
 textarea {
   padding: 12px;
-  border: 1px solid #e0e0e0;
+  border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 16px;
   transition: all 0.3s ease;
@@ -650,7 +650,7 @@ textarea {
 
 input[type='date'] {
   padding: 12px;
-  border: 1px solid #e0e0e0;
+  border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 16px;
   transition: all 0.3s ease;
