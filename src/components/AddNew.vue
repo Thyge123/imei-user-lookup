@@ -44,7 +44,12 @@
               @input="debouncedValidateInput"
               aria-describedby="imeiHelp"
             />
-            <button type="button" class="clear-btn" @click="clearInput" v-if="user.imei.length > 0">
+            <button
+              type="button"
+              class="clear-btn"
+              @click="clearIMEIInput"
+              v-if="user.imei.length > 0"
+            >
               ×
             </button>
             <transition name="fade">
@@ -172,7 +177,7 @@ export default {
     return {
       user: {
         id: null,
-        imei: null,
+        imei: '',
         name: null,
         model: null,
         agreedPrice: null,
@@ -439,7 +444,6 @@ export default {
     }
   },
   created() {
-    this.user.imei = ''
     this.loading = false
   }
 }
@@ -721,7 +725,7 @@ textarea:focus {
 }
 
 .footer {
-  margin-top: 40px;
+  margin-top: 20px;
   font-size: 12px;
   color: #7f8c8d;
   text-align: center;

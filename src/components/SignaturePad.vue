@@ -113,7 +113,7 @@ export default {
 
 .signature-box {
   width: 100%;
-  height: 95px;
+  height: 110px;
   border: 2px dashed #bdc3c7;
   border-radius: 8px;
   display: flex;
@@ -136,7 +136,7 @@ export default {
 
 .clear-signature-btn,
 .save-signature-btn {
-  margin-top: 24px;
+  margin-top: 10px;
   padding: 12px 24px;
   background-color: #3498db;
   color: white;
@@ -144,6 +144,7 @@ export default {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  width: 100%;
 }
 
 .save-signature-btn {

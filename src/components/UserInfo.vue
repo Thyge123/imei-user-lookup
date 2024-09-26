@@ -438,7 +438,7 @@ export default {
   }
 
   .signature-box {
-    height: 90px !important;
+    height: 110px !important;
   }
 
   .bank-details .long-input {
@@ -655,7 +655,7 @@ textarea:focus {
 }
 
 .footer {
-  margin-top: 40px;
+  margin-top: 20px;
   font-size: 12px;
   color: #7f8c8d;
   text-align: center;
