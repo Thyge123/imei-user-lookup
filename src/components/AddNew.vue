@@ -122,13 +122,7 @@
           </div>
         </div>
         <br />
-        <div class="form-row signature full-width">
-          <label>Underskrift</label>
-          <div class="signature-box">
-            <canvas ref="signaturePad" class="signature-canvas"></canvas>
-          </div>
-          <button @click="clearSignature" class="clear-signature-btn">Clear</button>
-        </div>
+        <SignaturePad ref="signaturePad" :user="user" @update-signature="updateSignature" />
       </div>
       <div class="footer">
         <p>
@@ -166,11 +160,13 @@
 <script>
 import axios from 'axios'
 import Toast from './ToastNotification.vue'
+import SignaturePad from './SignaturePad.vue'
 
 export default {
   name: 'UserInfo',
   components: {
-    Toast
+    Toast,
+    SignaturePad
   },
   data() {
     return {
@@ -205,10 +201,7 @@ export default {
         bankAccount: '',
         name: '',
         date: ''
-      },
-      isDrawing: false,
-      context: null,
-      timeoutId: null
+      }
     }
   },
   methods: {
@@ -244,12 +237,15 @@ export default {
       formData.append('name', user.name)
       formData.append('model', user.model)
       formData.append('agreedPrice', user.agreedPrice)
-      formData.append('notes', user?.notes)
       formData.append('birthday', user.birthday)
       formData.append('phoneNumber', user.phoneNumber)
       formData.append('bankReg', user.bankReg)
       formData.append('bankAccount', user.bankAccount)
       formData.append('date', user.date)
+
+      if (user.notes) {
+        formData.append('notes', user?.notes)
+      }
 
       if (this.user.picture) {
         formData.append('webAddress', this.user.picture)
@@ -276,6 +272,9 @@ export default {
         this.$refs.toast.show()
         return
       }
+
+      const signatureUrl = await this.$refs.signaturePad.saveSignature()
+      this.user.signature = signatureUrl
 
       try {
         // Check if IMEI already exists
@@ -435,78 +434,13 @@ export default {
     print() {
       window.print()
     },
-    resizeCanvas() {
-      const canvas = this.$refs.signaturePad
-      canvas.width = canvas.offsetWidth
-      canvas.height = canvas.offsetHeight
-    },
-    startDrawing(event) {
-      this.isDrawing = true
-      this.context.beginPath()
-      this.context.moveTo(event.offsetX, event.offsetY)
-      if (this.timeoutId) {
-        clearTimeout(this.timeoutId)
-        this.timeoutId = null
-      }
-    },
-    draw(event) {
-      if (!this.isDrawing) return
-      this.context.lineTo(event.offsetX, event.offsetY)
-      this.context.stroke()
-    },
-    stopDrawing() {
-      this.isDrawing = false
-      this.timeoutId = setTimeout(() => {
-        this.saveSignature()
-      }, 2000) // 2 seconds delay
-    },
-    saveSignature() {
-      const canvas = this.$refs.signaturePad
-      canvas.toBlob((blob) => {
-        const formData = new FormData()
-        formData.append('signature', blob, 'signature.png')
-
-        axios
-          .post('https://imei-lookup-backend.onrender.com/api/upload-signature', formData)
-          .then((response) => {
-            this.user.signature = response.data.signatureUrl
-          })
-          .catch((error) => {
-            console.error('Error uploading signature:', error)
-          })
-      }, 'image/png')
-    },
-    clearSignature() {
-      const canvas = this.$refs.signaturePad
-      this.context.clearRect(0, 0, canvas.width, canvas.height)
-      this.user.signature = null
+    updateSignature(signatureUrl) {
+      this.user.signature = signatureUrl
     }
   },
   created() {
     this.user.imei = ''
     this.loading = false
-  },
-  mounted() {
-    const canvas = this.$refs.signaturePad
-    if (canvas) {
-      this.context = canvas.getContext('2d')
-      this.resizeCanvas()
-      window.addEventListener('resize', this.resizeCanvas)
-      canvas.addEventListener('mousedown', this.startDrawing)
-      canvas.addEventListener('mousemove', this.draw)
-      canvas.addEventListener('mouseup', this.stopDrawing)
-      canvas.addEventListener('mouseleave', this.stopDrawing)
-    }
-  },
-  beforeUnmount() {
-    const canvas = this.$refs.signaturePad
-    if (canvas) {
-      window.removeEventListener('resize', this.resizeCanvas)
-      canvas.removeEventListener('mousedown', this.startDrawing)
-      canvas.removeEventListener('mousemove', this.draw)
-      canvas.removeEventListener('mouseup', this.stopDrawing)
-      canvas.removeEventListener('mouseleave', this.stopDrawing)
-    }
   }
 }
 </script>

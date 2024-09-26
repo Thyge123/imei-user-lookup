@@ -283,7 +283,7 @@ app.post('/api/users/:id/update-picture', upload.single('picture'), (req, res) =
 // Endpoint to handle signature upload
 app.post('/api/upload-signature', upload.single('signature'), (req, res) => {
   if (req.file) {
-    const signatureUrl = `https://imei-lookup-backend.onrender.com/api/uploads/${req.file.filename}`
+    const signatureUrl = `https://imei-lookup-backend.onrender.com/uploads/${req.file.filename}`
     res.json({ message: 'Signature uploaded successfully', signatureUrl })
   } else {
     res.status(400).json({ message: 'No signature file provided' })
