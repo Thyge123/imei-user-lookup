@@ -207,7 +207,8 @@ export default {
         date: ''
       },
       isDrawing: false,
-      context: null
+      context: null,
+      timeoutId: null
     }
   },
   methods: {
@@ -443,6 +444,10 @@ export default {
       this.isDrawing = true
       this.context.beginPath()
       this.context.moveTo(event.offsetX, event.offsetY)
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId)
+        this.timeoutId = null
+      }
     },
     draw(event) {
       if (!this.isDrawing) return
@@ -451,12 +456,25 @@ export default {
     },
     stopDrawing() {
       this.isDrawing = false
-      this.saveSignature()
+      this.timeoutId = setTimeout(() => {
+        this.saveSignature()
+      }, 2000) // 2 seconds delay
     },
     saveSignature() {
       const canvas = this.$refs.signaturePad
-      this.user.signature = canvas.toDataURL('image/png')
-      console.log(this.user.signature)
+      canvas.toBlob((blob) => {
+        const formData = new FormData()
+        formData.append('signature', blob, 'signature.png')
+
+        axios
+          .post('https://imei-lookup-backend.onrender.com/api/upload-signature', formData)
+          .then((response) => {
+            this.user.signature = response.data.signatureUrl
+          })
+          .catch((error) => {
+            console.error('Error uploading signature:', error)
+          })
+      }, 'image/png')
     },
     clearSignature() {
       const canvas = this.$refs.signaturePad
