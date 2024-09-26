@@ -39,7 +39,7 @@
               type="text"
               id="imei"
               v-model="user.imei"
-              :disabled="isLoading"
+              :disabled="loading"
               required
               @input="debouncedValidateInput"
               aria-describedby="imeiHelp"
@@ -250,10 +250,18 @@ export default {
       formData.append('bankAccount', user.bankAccount)
       formData.append('date', user.date)
 
+      if (this.user.picture) {
+        formData.append('webAddress', this.user.picture)
+      }
+
       if (file) {
         formData.append('picture', file)
       } else if (imageUrl) {
         formData.append('webAddress', imageUrl)
+      }
+
+      if (user.signature) {
+        formData.append('signature', user.signature)
       }
 
       return formData
@@ -448,6 +456,7 @@ export default {
     saveSignature() {
       const canvas = this.$refs.signaturePad
       this.user.signature = canvas.toDataURL('image/png')
+      console.log(this.user.signature)
     },
     clearSignature() {
       const canvas = this.$refs.signaturePad
@@ -461,20 +470,25 @@ export default {
   },
   mounted() {
     const canvas = this.$refs.signaturePad
-    this.context = canvas.getContext('2d')
-    canvas.width = canvas.offsetWidth
-    canvas.height = canvas.offsetHeight
-    canvas.addEventListener('mousedown', this.startDrawing)
-    canvas.addEventListener('mousemove', this.draw)
-    canvas.addEventListener('mouseup', this.stopDrawing)
-    canvas.addEventListener('mouseleave', this.stopDrawing)
+    if (canvas) {
+      this.context = canvas.getContext('2d')
+      this.resizeCanvas()
+      window.addEventListener('resize', this.resizeCanvas)
+      canvas.addEventListener('mousedown', this.startDrawing)
+      canvas.addEventListener('mousemove', this.draw)
+      canvas.addEventListener('mouseup', this.stopDrawing)
+      canvas.addEventListener('mouseleave', this.stopDrawing)
+    }
   },
   beforeUnmount() {
     const canvas = this.$refs.signaturePad
-    canvas.removeEventListener('mousedown', this.startDrawing)
-    canvas.removeEventListener('mousemove', this.draw)
-    canvas.removeEventListener('mouseup', this.stopDrawing)
-    canvas.removeEventListener('mouseleave', this.stopDrawing)
+    if (canvas) {
+      window.removeEventListener('resize', this.resizeCanvas)
+      canvas.removeEventListener('mousedown', this.startDrawing)
+      canvas.removeEventListener('mousemove', this.draw)
+      canvas.removeEventListener('mouseup', this.stopDrawing)
+      canvas.removeEventListener('mouseleave', this.stopDrawing)
+    }
   }
 }
 </script>

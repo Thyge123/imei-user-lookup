@@ -208,8 +208,7 @@
         <div class="form-row signature full-width">
           <label>Underskrift</label>
           <div class="signature-box">
-            <img :src="user.signature" alt="User Signature" v-if="user.signature" />
-            <span v-else>Klik for at se underskrift</span>
+            <img :src="user.signature" alt="User Signature" />
           </div>
         </div>
       </div>

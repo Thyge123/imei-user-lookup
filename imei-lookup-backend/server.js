@@ -143,7 +143,7 @@ app.post('/api/users', upload.single('picture'), (req, res) => {
   // Handle profile picture if provided
   if (req.file) {
     // If a file is uploaded, set the picture URL to the uploaded file's path
-    user.picture = `http://https://imei-lookup-backend.onrender.com/uploads/${req.file.filename}`
+    user.picture = `https://imei-lookup-backend.onrender.com/uploads/${req.file.filename}`
   } else if (req.body.webAddress) {
     // If a web address is provided, set the picture URL to the web address
     user.picture = req.body.webAddress
@@ -159,7 +159,9 @@ app.post('/api/users', upload.single('picture'), (req, res) => {
     !user.phoneNumber ||
     !user.bankReg ||
     !user.bankAccount ||
-    !user.date
+    !user.date ||
+    !user.picture ||
+    !user.signature
   ) {
     return res.status(400).json({ message: 'Missing required fields' }) // Return a 400 error if any required fields are missing
   }
