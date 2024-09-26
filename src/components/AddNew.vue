@@ -26,7 +26,6 @@
           @change="updateImageUrl"
         />
       </div>
-      <br />
       <div class="input-group" :class="{ 'input-error': error }">
         <div class="form-grid">
           <div class="form-row">
@@ -71,13 +70,7 @@
           </div>
           <div class="form-row">
             <label for="birthday">Kundens fødselsdato (ddmmåå)</label>
-            <input
-              id="birthday"
-              type="date"
-              v-model="user.birthday"
-              class="modern-date-input"
-              @input="validateBirthday"
-            />
+            <input id="birthday" type="date" v-model="user.birthday" @input="validateBirthday" />
             <span v-if="errors.birthday" class="error">{{ errors.birthday }}</span>
           </div>
           <div class="form-row">
@@ -132,9 +125,9 @@
         <div class="form-row signature full-width">
           <label>Underskrift</label>
           <div class="signature-box">
-            <img :src="user.signature" alt="User Signature" v-if="user.signature" />
-            <span v-else>Klik f or at se underskrift</span>
+            <canvas ref="signaturePad" class="signature-canvas"></canvas>
           </div>
+          <button @click="clearSignature" class="clear-signature-btn">Clear</button>
         </div>
       </div>
       <div class="footer">
@@ -152,6 +145,7 @@
         <button @click="goBack" class="back-btn" aria-label="back">
           <span class="back-icon">←</span> Tilbage
         </button>
+        <button @click="print" class="add-btn" aria-label="print">Print</button>
         <button @click="addUser" class="add-btn" aria-label="add">Tilføj</button>
       </div>
       <Toast ref="toastSuccess" message="Success!" />
@@ -185,15 +179,14 @@ export default {
         imei: null,
         name: null,
         model: null,
-        agreedPrice: 0,
+        agreedPrice: null,
         birthday: null,
         phoneNumber: null,
         bankReg: null,
         bankAccount: null,
         date: null,
         picture: 'https://icons.veryicon.com/png/o/internet--web/55-common-web-icons/person-4.png',
-        signature:
-          'https://artlogo.co/cdn/shop/files/Group_31683798-2456-42f0-9aa4-0ccc3dcd7007.svg?v=1681759932'
+        signature: null
       },
       loading: true,
       error: false,
@@ -212,7 +205,9 @@ export default {
         bankAccount: '',
         name: '',
         date: ''
-      }
+      },
+      isDrawing: false,
+      context: null
     }
   },
   methods: {
@@ -427,16 +422,135 @@ export default {
     async updateImageUrl() {
       if (!this.imageUrl) return
       this.user.picture = this.imageUrl
+    },
+    print() {
+      window.print()
+    },
+    resizeCanvas() {
+      const canvas = this.$refs.signaturePad
+      canvas.width = canvas.offsetWidth
+      canvas.height = canvas.offsetHeight
+    },
+    startDrawing(event) {
+      this.isDrawing = true
+      this.context.beginPath()
+      this.context.moveTo(event.offsetX, event.offsetY)
+    },
+    draw(event) {
+      if (!this.isDrawing) return
+      this.context.lineTo(event.offsetX, event.offsetY)
+      this.context.stroke()
+    },
+    stopDrawing() {
+      this.isDrawing = false
+      this.saveSignature()
+    },
+    saveSignature() {
+      const canvas = this.$refs.signaturePad
+      this.user.signature = canvas.toDataURL('image/png')
+    },
+    clearSignature() {
+      const canvas = this.$refs.signaturePad
+      this.context.clearRect(0, 0, canvas.width, canvas.height)
+      this.user.signature = null
     }
   },
   created() {
     this.user.imei = ''
     this.loading = false
+  },
+  mounted() {
+    const canvas = this.$refs.signaturePad
+    this.context = canvas.getContext('2d')
+    canvas.width = canvas.offsetWidth
+    canvas.height = canvas.offsetHeight
+    canvas.addEventListener('mousedown', this.startDrawing)
+    canvas.addEventListener('mousemove', this.draw)
+    canvas.addEventListener('mouseup', this.stopDrawing)
+    canvas.addEventListener('mouseleave', this.stopDrawing)
+  },
+  beforeUnmount() {
+    const canvas = this.$refs.signaturePad
+    canvas.removeEventListener('mousedown', this.startDrawing)
+    canvas.removeEventListener('mousemove', this.draw)
+    canvas.removeEventListener('mouseup', this.stopDrawing)
+    canvas.removeEventListener('mouseleave', this.stopDrawing)
   }
 }
 </script>
 
 <style scoped>
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    transform: scale(0.78) !important;
+    transform-origin: top left;
+  }
+
+  .card {
+    box-shadow: none !important;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    padding-top: 10px !important;
+  }
+
+  .header,
+  .footer,
+  .form-grid,
+  .form-row,
+  .buttons {
+    margin: 0;
+    padding: 0;
+  }
+
+  .hidden-print {
+    display: none;
+  }
+
+  .button-container {
+    display: none !important;
+  }
+
+  .update-image-container {
+    display: none !important;
+  }
+
+  .user-info-page {
+    padding-top: 10px !important;
+  }
+
+  .form-grid {
+    margin-top: 0 !important;
+  }
+
+  .signature-box {
+    height: 90px !important;
+  }
+
+  .bank-details .long-input {
+    width: 440px !important;
+  }
+
+  .edit-icon {
+    display: none !important;
+  }
+
+  input[type='date'] {
+    color: transparent;
+  }
+
+  input::placeholder,
+  input[type='date']::placeholder {
+    color: transparent;
+  }
+
+  .clear-signature-btn {
+    display: none;
+  }
+}
+
 .user-info-page {
   animation: fadeIn 0.5s ease-in-out;
   display: flex;
@@ -534,6 +648,7 @@ h1 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
+  margin-top: 10px;
 }
 
 .form-row {
@@ -550,28 +665,6 @@ label {
   color: black;
   margin-bottom: 6px;
   font-weight: 600;
-}
-
-.modern-date-input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-  color: #333;
-  background-color: #f9f9f9;
-  transition:
-    border-color 0.3s,
-    box-shadow 0.3s;
-}
-
-.modern-date-input:focus {
-  border-color: #4caf50;
-  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-  outline: none;
-}
-
-.modern-date-input::-webkit-calendar-picker-indicator {
-  filter: invert(50%);
 }
 
 input,
@@ -640,7 +733,6 @@ textarea:focus {
 
 .signature-box {
   width: 100%;
-  max-width: 600px; /* Adjust this value to control the maximum width */
   height: 120px;
   border: 2px dashed #bdc3c7;
   border-radius: 8px;
@@ -648,13 +740,18 @@ textarea:focus {
   justify-content: center;
   align-items: center;
   background-color: #f9f9f9;
-  margin: 0 auto; /* This centers the signature box */
+  margin: 0 auto;
 }
 
 .signature-box img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.signature-canvas {
+  width: 100%;
+  height: 100%;
 }
 
 .footer {
@@ -688,7 +785,17 @@ textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: auto;
+}
+
+.clear-signature-btn {
+  margin-top: 24px;
+  padding: 12px 24px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .back-btn {
@@ -704,7 +811,6 @@ textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: auto;
 }
 
 .back-btn:hover {

@@ -34,7 +34,6 @@
           v-on:change="updateImageUrl"
         />
       </div>
-      <br />
       <div class="form-grid">
         <div class="form-row">
           <label for="model">Model</label>
@@ -229,6 +228,7 @@
         <button @click="goBack" class="back-btn" aria-label="Tilbage til søgning">
           <span class="back-icon">← Tilbage til søgning</span>
         </button>
+        <button @click="print" class="back-btn" aria-label="Print">Print</button>
         <button @click="deleteUser" class="delete-btn" aria-label="Slet bruger">
           <span class="delete-icon">🗑 Slet bruger</span>
         </button>
@@ -383,12 +383,73 @@ export default {
       } catch (error) {
         console.error('Error updating image via URL:', error)
       }
+    },
+    print() {
+      window.print()
     }
   }
 }
 </script>
 
 <style scoped>
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    transform: scale(0.78) !important;
+    transform-origin: top left;
+  }
+
+  .card {
+    box-shadow: none !important;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    padding-top: 10px !important;
+  }
+
+  .header,
+  .footer,
+  .form-grid,
+  .form-row,
+  .buttons {
+    margin: 0;
+    padding: 0;
+  }
+
+  .hidden-print {
+    display: none;
+  }
+
+  .back-btn,
+  .delete-btn {
+    display: none !important;
+  }
+
+  .update-image-container {
+    display: none !important;
+  }
+
+  .user-info-page {
+    padding-top: 10px !important;
+  }
+
+  .form-grid {
+    margin-top: 0 !important;
+  }
+
+  .signature-box {
+    height: 90px !important;
+  }
+
+  .bank-details .long-input {
+    width: 440px !important;
+  }
+
+  .edit-icon {
+    display: none !important;
+  }
+}
 .user-info-page {
   animation: fadeIn 0.5s ease-in-out;
   display: flex;
@@ -398,6 +459,10 @@ export default {
   background-color: #f5f7fa;
   font-family: 'Roboto', sans-serif;
   padding: 20px;
+}
+
+.form-grid {
+  margin-top: 10px;
 }
 
 .card {
