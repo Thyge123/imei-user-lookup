@@ -303,7 +303,7 @@ export default {
       if (!this.validateForm()) {
         console.log(this.errors)
         this.error = true
-        this.errorMessage = 'Please correct the errors in the form.'
+        this.errorMessage = 'Ret venligst fejlene i formularen.'
         this.$refs.toast.show()
         return
       }
@@ -316,7 +316,7 @@ export default {
         const imeiExists = await this.checkImeiExists(this.user.imei)
         if (imeiExists) {
           this.error = true
-          this.errorMessage = 'IMEI already exists'
+          this.errorMessage = 'IMEI findes allerede'
           this.$refs.toast.show()
           return
         }
@@ -375,9 +375,9 @@ export default {
     validateIMEI() {
       const imeiPattern = /^[0-9]{15}$/
       if (!this.user.imei) {
-        this.errors.imei = 'IMEI is required'
+        this.errors.imei = 'IMEI er påkrævet'
       } else if (!imeiPattern.test(this.user.imei)) {
-        this.errors.imei = 'IMEI must be a 15-digit number'
+        this.errors.imei = 'IMEI skal være et 15-cifret nummer'
       } else {
         this.errors.imei = ''
       }
@@ -385,7 +385,7 @@ export default {
     // Validate the model input
     validateModel() {
       if (!this.user.model) {
-        this.errors.model = 'Model is required'
+        this.errors.model = 'Model er påkrævet'
       } else {
         this.errors.model = ''
       }
@@ -393,7 +393,7 @@ export default {
     // Validate the agreed price input
     validateAgreedPrice() {
       if (!this.user.agreedPrice || isNaN(this.user.agreedPrice)) {
-        this.errors.agreedPrice = 'Agreed price must be a number'
+        this.errors.agreedPrice = 'Den aftalte pris skal være et tal'
       } else {
         this.errors.agreedPrice = ''
       }
@@ -401,7 +401,7 @@ export default {
     // Validate the birthday input
     validateBirthday() {
       if (!this.user.birthday) {
-        this.errors.birthday = 'Birthday is required'
+        this.errors.birthday = 'Fødselsdag er påkrævet'
       } else {
         this.errors.birthday = ''
       }
@@ -410,7 +410,7 @@ export default {
     validatePhoneNumber() {
       const phonePattern = /^\+?[0-9 ]+$/
       if (!phonePattern.test(this.user.phoneNumber)) {
-        this.errors.phoneNumber = 'Phone number must be a valid number'
+        this.errors.phoneNumber = 'Telefonnummeret skal være et gyldigt nummer'
       } else {
         this.errors.phoneNumber = ''
       }
@@ -418,7 +418,7 @@ export default {
     // Validate the bank registration number input
     validateBankReg() {
       if (!this.user.bankReg) {
-        this.errors.bankReg = 'Bank registration number is required'
+        this.errors.bankReg = 'Bankens registreringsnummer er påkrævet'
       } else {
         this.errors.bankReg = ''
       }
@@ -426,7 +426,7 @@ export default {
     // Validate the bank account number input
     validateBankAccount() {
       if (!this.user.bankAccount) {
-        this.errors.bankAccount = 'Bank account number is required'
+        this.errors.bankAccount = 'Bankkontonummer er påkrævet'
       } else {
         this.errors.bankAccount = ''
       }
@@ -434,7 +434,7 @@ export default {
     // Validate the name input
     validateName() {
       if (!this.user.name) {
-        this.errors.name = 'Name is required'
+        this.errors.name = 'Navn er påkrævet'
       } else {
         this.errors.name = ''
       }
@@ -442,7 +442,7 @@ export default {
     // Validate the date input
     validateDate() {
       if (!this.user.date) {
-        this.errors.date = 'Date is required'
+        this.errors.date = 'Dato er påkrævet'
       } else {
         this.errors.date = ''
       }

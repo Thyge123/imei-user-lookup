@@ -55,7 +55,7 @@
               {{ editMode.model ? '✔' : '✎' }}
             </span>
           </div>
-          <span v-if="!editMode.model" class="copy-tooltip">Click to copy</span>
+          <span v-if="!editMode.model" class="copy-tooltip">Klik for at kopiere</span>
         </div>
         <!-- Form row for IMEI input -->
         <div class="form-row">
@@ -73,7 +73,7 @@
               {{ editMode.imei ? '✔' : '✎' }}
             </span>
           </div>
-          <span v-if="!editMode.imei" class="copy-tooltip">Click to copy</span>
+          <span v-if="!editMode.imei" class="copy-tooltip">Klik for at kopiere</span>
         </div>
         <!-- Form row for agreed price input -->
         <div class="form-row">
@@ -91,7 +91,7 @@
               {{ editMode.agreedPrice ? '✔' : '✎' }}
             </span>
           </div>
-          <span v-if="!editMode.agreedPrice" class="copy-tooltip">Click to copy</span>
+          <span v-if="!editMode.agreedPrice" class="copy-tooltip">Klik for at kopiere</span>
         </div>
         <!-- Form row for notes input -->
         <div class="form-row">
@@ -108,7 +108,7 @@
               {{ editMode.notes ? '✔' : '✎' }}
             </span>
           </div>
-          <span class="copy-tooltip">Click to copy</span>
+          <span class="copy-tooltip">Klik for at kopiere</span>
         </div>
         <!-- Form row for birthday input -->
         <div class="form-row">
@@ -126,7 +126,7 @@
               {{ editMode.birthday ? '✔' : '✎' }}
             </span>
           </div>
-          <span v-if="!editMode.birthday" class="copy-tooltip">Click to copy</span>
+          <span v-if="!editMode.birthday" class="copy-tooltip">Klik for at kopiere</span>
         </div>
         <!-- Form row for phone number input -->
         <div class="form-row">
@@ -144,7 +144,7 @@
               {{ editMode.phoneNumber ? '✔' : '✎' }}
             </span>
           </div>
-          <span v-if="!editMode.phoneNumber" class="copy-tooltip">Click to copy</span>
+          <span v-if="!editMode.phoneNumber" class="copy-tooltip">Klik for at kopiere</span>
         </div>
         <!-- Form row for bank details input -->
         <div class="form-row bank-details">
@@ -177,7 +177,7 @@
                 {{ editMode.bankAccount ? '✔' : '✎' }}
               </span>
             </div>
-            <span v-if="!editMode.bankAccount" class="copy-tooltip">Click to copy</span>
+            <span v-if="!editMode.bankAccount" class="copy-tooltip">Klik for at kopiere</span>
           </div>
         </div>
         <!-- Form row for name input -->
@@ -197,7 +197,7 @@
               {{ editMode.name ? '✔' : '✎' }}
             </span>
           </div>
-          <span v-if="!editMode.name" class="copy-tooltip">Click to copy</span>
+          <span v-if="!editMode.name" class="copy-tooltip">Klik for at kopiere</span>
         </div>
         <!-- Form row for date input -->
         <div class="form-row">
@@ -215,7 +215,7 @@
               {{ editMode.date ? '✔' : '✎' }}
             </span>
           </div>
-          <span v-if="!editMode.date" class="copy-tooltip">Click to copy</span>
+          <span v-if="!editMode.date" class="copy-tooltip">Klik for at kopiere</span>
         </div>
         <br />
         <!-- Form row for signature -->
@@ -263,7 +263,7 @@
       </button>
     </div>
     <!-- Toast notification for clipboard copy -->
-    <Toast ref="toast" message="Field copied to clipboard!" />
+    <Toast ref="toast" message="Felt kopieret til udklipsholder!" />
   </div>
 </template>
 

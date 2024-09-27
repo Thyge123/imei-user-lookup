@@ -92,7 +92,7 @@ export default {
       this.error = null
 
       if (!this.isValidIMEI) {
-        this.error = 'Please enter a valid 15-digit IMEI number.'
+        this.error = 'Indtast venligst et gyldigt 15-cifret IMEI-nummer.'
         return
       }
 
@@ -105,9 +105,9 @@ export default {
         this.imei = ''
       } catch (error) {
         if (error.response && error.response.status === 404) {
-          this.error = 'No user found with the given IMEI number.'
+          this.error = 'Ingen bruger fundet med det givne IMEI-nummer.'
         } else {
-          this.error = 'An error occurred while looking up the user. Please try again.'
+          this.error = 'Der opstod en fejl under søgning af brugeren. Prøv venligst igen.'
         }
       } finally {
         this.isLoading = false
