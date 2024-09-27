@@ -1,7 +1,9 @@
 <template>
   <div class="user-info-page">
+    <!-- Card container for user information, shown when not loading and no error -->
     <div class="card" v-if="!loading && !error">
       <div class="header">
+        <!-- Company logo -->
         <img
           src="https://telegiganten.dk/wp-content/uploads/2023/12/cropped-logo-Telegiganten.png.webp"
           alt="Telegiganten Logo"
@@ -20,12 +22,14 @@
       </div>
       <div class="update-image-container">
         <div class="update-image-buttons">
+          <!-- Button to trigger file input for updating image -->
           <button v-if="user.picture" @click="triggerFileInput" class="update-image-btn">
             Opdater Billede
           </button>
           <input type="file" ref="fileInput" @change="updateImage" style="display: none" />
         </div>
         <label for="ImageURL">Billede URL:</label>
+        <!-- Input for updating image URL -->
         <input
           type="text"
           v-model="user.picture"
@@ -35,6 +39,7 @@
         />
       </div>
       <div class="form-grid">
+        <!-- Form row for model input -->
         <div class="form-row">
           <label for="model">Model</label>
           <div class="input-wrapper">
@@ -52,6 +57,7 @@
           </div>
           <span v-if="!editMode.model" class="copy-tooltip">Click to copy</span>
         </div>
+        <!-- Form row for IMEI input -->
         <div class="form-row">
           <label for="imei">IMEI-/Serienummer</label>
           <div class="input-wrapper">
@@ -69,6 +75,7 @@
           </div>
           <span v-if="!editMode.imei" class="copy-tooltip">Click to copy</span>
         </div>
+        <!-- Form row for agreed price input -->
         <div class="form-row">
           <label for="agreedPrice">Aftalt pris (DKK)</label>
           <div class="input-wrapper">
@@ -86,6 +93,7 @@
           </div>
           <span v-if="!editMode.agreedPrice" class="copy-tooltip">Click to copy</span>
         </div>
+        <!-- Form row for notes input -->
         <div class="form-row">
           <label for="notes">Bemærkninger</label>
           <div class="input-wrapper">
@@ -102,6 +110,7 @@
           </div>
           <span class="copy-tooltip">Click to copy</span>
         </div>
+        <!-- Form row for birthday input -->
         <div class="form-row">
           <label for="birthday">Kundens fødselsdato (ddmmåå)</label>
           <div class="input-wrapper">
@@ -119,6 +128,7 @@
           </div>
           <span v-if="!editMode.birthday" class="copy-tooltip">Click to copy</span>
         </div>
+        <!-- Form row for phone number input -->
         <div class="form-row">
           <label for="phoneNumber">Kundens tlf.nummer</label>
           <div class="input-wrapper">
@@ -136,6 +146,7 @@
           </div>
           <span v-if="!editMode.phoneNumber" class="copy-tooltip">Click to copy</span>
         </div>
+        <!-- Form row for bank details input -->
         <div class="form-row bank-details">
           <label>Kundens bankkonto</label>
           <div class="bank-inputs">
@@ -169,6 +180,7 @@
             <span v-if="!editMode.bankAccount" class="copy-tooltip">Click to copy</span>
           </div>
         </div>
+        <!-- Form row for name input -->
         <div class="form-row full-width">
           <label for="name">Kundens navn (blokbogstaver)</label>
           <div class="input-wrapper">
@@ -187,6 +199,7 @@
           </div>
           <span v-if="!editMode.name" class="copy-tooltip">Click to copy</span>
         </div>
+        <!-- Form row for date input -->
         <div class="form-row">
           <label for="date">Dato</label>
           <div class="input-wrapper">
@@ -205,6 +218,7 @@
           <span v-if="!editMode.date" class="copy-tooltip">Click to copy</span>
         </div>
         <br />
+        <!-- Form row for signature -->
         <div class="form-row signature full-width">
           <label>Underskrift</label>
           <div class="signature-box">
@@ -224,42 +238,47 @@
         </p>
       </div>
       <div class="buttons">
+        <!-- Button to go back to the previous page -->
         <button @click="goBack" class="back-btn" aria-label="Tilbage til søgning">
           <span class="back-icon">← Tilbage til søgning</span>
         </button>
+        <!-- Button to print the page -->
         <button @click="print" class="back-btn" aria-label="Print">Print</button>
+        <!-- Button to delete the user -->
         <button @click="deleteUser" class="delete-btn" aria-label="Slet bruger">
           <span class="delete-icon">🗑 Slet bruger</span>
         </button>
       </div>
     </div>
+    <!-- Loading state -->
     <div v-else-if="loading" class="loading" aria-live="polite">
       <div class="spinner" aria-hidden="true"></div>
       <p>Indlæser brugeroplysninger...</p>
     </div>
+    <!-- Error state -->
     <div v-else class="error" aria-live="assertive">
       <p>Fejl ved indlæsning af brugeroplysninger. Prøv venligst igen senere.</p>
       <button @click="goBack" class="back-btn" aria-label="Tilbage til søgning">
         <span class="back-icon">←</span> Tilbage til søgning
       </button>
     </div>
-
+    <!-- Toast notification for clipboard copy -->
     <Toast ref="toast" message="Field copied to clipboard!" />
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import Toast from './ToastNotification.vue'
+import Toast from '../components/ToastNotification.vue'
 export default {
   name: 'UserInfo',
   components: { Toast },
   data() {
     return {
-      user: null,
-      loading: true,
-      error: false,
-      copiedField: null,
+      user: null, // User data object
+      loading: true, // Loading state
+      error: false, // Error state
+      copiedField: null, // Field that was copied to clipboard
       editMode: {
         model: false,
         imei: false,
@@ -272,12 +291,12 @@ export default {
         name: false,
         date: false
       },
-      imageUrl: ''
+      imageUrl: '' // Image URL for updating user picture
     }
   },
   created() {
     this.loading = true
-    this.fetchUserInfo()
+    this.fetchUserInfo() // Fetch user info when component is created
   },
   methods: {
     async fetchUserInfo() {
@@ -285,24 +304,26 @@ export default {
       this.error = false
       const imei = this.$route.params.imei
       try {
+        // Fetch user info from the API
         const response = await axios.get(
           `https://imei-lookup-backend.onrender.com/api/users/${imei}`
         )
         if (response && response.data) {
-          this.user = response.data
+          this.user = response.data // Store user data
         } else {
           throw new Error('Invalid response')
         }
       } catch (error) {
         console.error('Error fetching user info:', error)
-        this.error = true
+        this.error = true // Set error state if fetching fails
       } finally {
-        this.loading = false
+        this.loading = false // Set loading state to false
       }
     },
     // Update user with inline editing
     async updateUser() {
       try {
+        // Update user info in the API
         await axios.put(
           `https://imei-lookup-backend.onrender.com/api/users/${this.user.id}`,
           this.user
@@ -312,12 +333,14 @@ export default {
       }
     },
     async deleteUser() {
+      // Confirm before deleting the user
       if (confirm('Er du sikker på, at du vil slette denne bruger?')) {
         try {
+          // Delete user from the API
           await axios.delete(`https://imei-lookup-backend.onrender.com/api/users/${this.user.imei}`)
           this.loading = true
           setTimeout(() => {
-            this.$router.push({ name: 'IMEILookup' })
+            this.$router.push({ name: 'IMEILookup' }) // Navigate back to IMEI lookup page
           }, 3000)
         } catch (error) {
           console.error('Error deleting user:', error)
@@ -325,19 +348,20 @@ export default {
       }
     },
     goBack() {
-      this.$router.push({ name: 'IMEILookup' })
+      this.$router.push({ name: 'IMEILookup' }) // Navigate back to IMEI lookup page
     },
     copyToClipboard(text, field, isEditing) {
       if (isEditing) return // Disable copying while editing
       navigator.clipboard.writeText(text).then(() => {
-        this.copiedField = field
-        this.$refs.toast.show()
+        this.copiedField = field // Set copied field
+        this.$refs.toast.show() // Show toast notification
         setTimeout(() => {
-          this.copiedField = null
+          this.copiedField = null // Reset copied field after 2 seconds
         }, 2000)
       })
     },
     formatDate(dateString) {
+      // Format date to DD-MM-YYYY
       const date = new Date(dateString)
       const day = String(date.getDate()).padStart(2, '0')
       const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -345,11 +369,11 @@ export default {
       return `${day}-${month}-${year}`
     },
     toggleEditMode(field) {
-      this.editMode[field] = !this.editMode[field]
-      this.updateUser()
+      this.editMode[field] = !this.editMode[field] // Toggle edit mode for the field
+      this.updateUser() // Update user info
     },
     triggerFileInput() {
-      this.$refs.fileInput.click()
+      this.$refs.fileInput.click() // Trigger file input click
     },
     async updateImage(event) {
       const file = event.target.files[0]
@@ -359,32 +383,33 @@ export default {
       formData.append('picture', file)
 
       try {
+        // Update user picture in the API
         const response = await axios.post(
           `https://imei-lookup-backend.onrender.com/api/users/${this.user.id}/update-picture`,
           formData
         )
-        this.user.picture = response.data.picture
+        this.user.picture = response.data.picture // Update user picture
       } catch (error) {
         console.error('Error updating image:', error)
       }
     },
     async updateImageUrl() {
       if (!this.user.picture) return
-
       try {
+        // Update user picture via URL in the API
         const response = await axios.post(
           `https://imei-lookup-backend.onrender.com/api/users/${this.user.id}/update-picture`,
           {
             webAddress: this.user.picture
           }
         )
-        this.user.picture = response.data.picture
+        this.user.picture = response.data.picture // Update user picture
       } catch (error) {
         console.error('Error updating image via URL:', error)
       }
     },
     print() {
-      window.print()
+      window.print() // Print the page
     }
   }
 }
@@ -487,18 +512,18 @@ export default {
 }
 
 /*
-.id-placeholder {
-  width: 120px;
-  height: 120px;
-  border: 2px dashed #bdc3c7;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-size: 12px;
-  color: #7f8c8d;
-}
-*/
+  .id-placeholder {
+    width: 120px;
+    height: 120px;
+    border: 2px dashed #bdc3c7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 12px;
+    color: #7f8c8d;
+  }
+  */
 .profile-pic {
   height: 200px;
   object-fit: cover;

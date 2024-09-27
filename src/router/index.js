@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import IMEILookup from '../components/IMEILookup.vue'
-import UserInfo from '../components/UserInfo.vue'
-import AddNew from '@/components/AddNew.vue'
+import IMEILookup from '../views/IMEILookup.vue'
+import UserInfo from '../views/UserInfo.vue'
+import AddNew from '@/views/AddNew.vue'
 import AllUsers from '@/views/AllUsers.vue'
 
 const router = createRouter({

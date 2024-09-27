@@ -1,4 +1,3 @@
-<!-- src/views/AllUsers.vue -->
 <template>
   <div class="all-users">
     <h1>All Users</h1>
@@ -15,6 +14,7 @@
         </tr>
       </thead>
       <tbody>
+        <!-- Loop through users and display each user's details in a table row -->
         <tr v-for="user in users" :key="user.id">
           <td>{{ user.name || 'N/A' }}</td>
           <td>{{ user.imei || 'N/A' }}</td>
@@ -23,6 +23,7 @@
           <td>{{ user.agreedPrice ? `${user.agreedPrice} kr` : 'N/A' }}</td>
           <td style="width: 110px">{{ formatDate(user.date) }}</td>
           <td>
+            <!-- Edit button to navigate to the user info page -->
             <button
               @click="editUser(user)"
               class="btn btn-primary btn-sm"
@@ -30,6 +31,7 @@
             >
               Edit
             </button>
+            <!-- Delete button to remove the user -->
             <button @click="deleteUser(user)" class="btn btn-danger btn-sm">Delete</button>
           </td>
         </tr>
@@ -45,40 +47,45 @@ export default {
   name: 'AllUsers',
   data() {
     return {
-      users: []
+      users: [] // Array to store user data
     }
   },
   created() {
-    this.fetchUsers()
+    this.fetchUsers() // Fetch users when the component is created
   },
   methods: {
     async fetchUsers() {
       try {
+        // Fetch users from the API
         const response = await axios.get('https://imei-lookup-backend.onrender.com/api/users')
-        this.users = response.data
+        this.users = response.data // Store the fetched users in the users array
       } catch (error) {
-        console.error('Error fetching users:', error)
+        console.error('Error fetching users:', error) // Log any errors
       }
     },
     editUser(user) {
+      // Navigate to the user info page with the user's IMEI as a parameter
       this.$router.push({ name: 'UserInfo', params: { imei: user.imei } })
     },
     async deleteUser(user) {
+      // Confirm before deleting the user
       if (confirm('Er du sikker på, at du vil slette denne bruger?')) {
         try {
+          // Delete the user from the API
           await axios.delete(`https://imei-lookup-backend.onrender.com/api/users/${user.imei}`)
-          this.fetchUsers()
+          this.fetchUsers() // Refresh the user list
         } catch (error) {
-          console.error('Error deleting user:', error)
+          console.error('Error deleting user:', error) // Log any errors
         }
       }
     },
     formatDate(dateString) {
-      const date = new Date(dateString)
-      const day = String(date.getDate()).padStart(2, '0')
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const year = date.getFullYear()
-      return `${day}-${month}-${year}`
+      // Format the date to DD-MM-YYYY
+      const date = new Date(dateString) // Create a new Date object
+      const day = String(date.getDate()).padStart(2, '0') // Add leading zeros to the day
+      const month = String(date.getMonth() + 1).padStart(2, '0') // Add leading zeros to the month
+      const year = date.getFullYear() // Get the year
+      return `${day}-${month}-${year}` // Return the formatted date
     }
   }
 }

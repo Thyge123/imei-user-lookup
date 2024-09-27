@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import UserInfo from '../src/components/UserInfo.vue'
+import UserInfo from '../src/views/UserInfo.vue'
 import axios from 'axios'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 

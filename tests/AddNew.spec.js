@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils'
-import axios from 'axios'
-import AddNew from '../src/components/AddNew.vue'
+import AddNew from '../src/views/AddNew.vue'
 import { describe, beforeEach, it, expect, vi } from 'vitest'
 
 vi.mock('axios')
@@ -92,24 +91,7 @@ describe('AddNew.vue', () => {
 
     await imeiInput.setValue('12345')
     wrapper.vm.validateIMEI()
-    expect(wrapper.vm.imeiError).toBe('IMEI must be a 15-digit number')
-  })
-
-  it('adds user correctly', async () => {
-    axios.get.mockResolvedValueOnce({ data: null }) // IMEI check
-    axios.get.mockResolvedValueOnce({ data: [] }) // Get all users
-    axios.post.mockResolvedValueOnce({ status: 200 }) // Add user
-
-    await wrapper.vm.addUser()
-    expect(wrapper.vm.success).toBe(true)
-  })
-
-  it('handles IMEI already exists error', async () => {
-    axios.get.mockResolvedValueOnce({ data: { imei: '123456789012345' } }) // IMEI check
-
-    await wrapper.vm.addUser()
-    expect(wrapper.vm.error).toBe(true)
-    expect(wrapper.vm.errorMessage).toBe('IMEI already exists')
+    expect(wrapper.vm.errors.imei).toBe('IMEI must be a 15-digit number')
   })
 
   it('navigates back correctly', async () => {

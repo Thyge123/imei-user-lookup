@@ -72,41 +72,6 @@ const updateUser = (id, updatedUserData) => {
   }
 }
 
-// Mock database
-/*
-const users = [
-  {
-    imei: '123456789012345',
-    name: 'John Doe',
-    model: 'iPhone 12 Pro Max',
-    agreedPrice: 500.0,
-    notes: 'Some notes about the user...',
-    birthday: '1990-01-01',
-    phoneNumber: '+45 12345678',
-    bankDetails: 'Bank: XYZ, Account: 1234567890',
-    date: '2023-05-20',
-    picture: 'https://icons.veryicon.com/png/o/internet--web/55-common-web-icons/person-4.png',
-    signature:
-      'https://artlogo.co/cdn/shop/files/Group_31683798-2456-42f0-9aa4-0ccc3dcd7007.svg?v=1681759932'
-  },
-  {
-    imei: '987654321098765',
-    name: 'Jane Smith',
-    model: 'iPhone 12 Pro Max',
-    agreedPrice: 500.0,
-    notes: 'Some notes about the user...',
-    birthday: '1990-01-01',
-    phoneNumber: '+45 12345678',
-    bankReg: '1234',
-    bankAccount: '5678',
-    date: '2023-05-20',
-    picture: 'https://icons.veryicon.com/png/o/internet--web/55-common-web-icons/person-4.png',
-    signature:
-      'https://artlogo.co/cdn/shop/files/Group_31683798-2456-42f0-9aa4-0ccc3dcd7007.svg?v=1681759932'
-  }
-]
-*/
-
 // Endpoint to get a user by IMEI
 app.get('/api/users/:imei', (req, res) => {
   const imei = req.params.imei // Get the IMEI from the request parameters

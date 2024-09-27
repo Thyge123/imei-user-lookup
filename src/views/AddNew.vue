@@ -1,12 +1,15 @@
 <template>
   <div class="user-info-page">
+    <!-- Card container for user information, shown when not loading -->
     <div class="card" v-if="!loading">
       <div class="header">
+        <!-- Logo image -->
         <img
           src="https://telegiganten.dk/wp-content/uploads/2023/12/cropped-logo-Telegiganten.png.webp"
           alt="Telegiganten Logo"
           class="logo"
         />
+        <!-- User profile picture -->
         <div class="id-placeholder">
           <img :src="user.picture" alt="User Profile Picture" class="profile-pic" />
         </div>
@@ -14,9 +17,12 @@
       </div>
       <div class="update-image-container">
         <div class="update-image-buttons">
+          <!-- Button to trigger file input for image upload -->
           <button @click="triggerFileInput" class="update-image-btn">Upload Image</button>
+          <!-- Hidden file input for image upload -->
           <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none" />
         </div>
+        <!-- Input for image URL -->
         <label for="ImageURL">Billede URL:</label>
         <input
           type="text"
@@ -29,11 +35,13 @@
       <div class="input-group" :class="{ 'input-error': error }">
         <div class="form-grid">
           <div class="form-row">
+            <!-- Input for model -->
             <label for="model">Model</label>
             <input id="model" type="text" v-model="user.model" @input="validateModel" />
             <span v-if="errors.model" class="error">{{ errors.model }}</span>
           </div>
           <div class="form-row">
+            <!-- Input for IMEI/Serial number -->
             <label for="imei">IMEI-/Serienummer</label>
             <input
               type="text"
@@ -44,6 +52,7 @@
               @input="debouncedValidateInput"
               aria-describedby="imeiHelp"
             />
+            <!-- Button to clear IMEI input -->
             <button
               type="button"
               class="clear-btn"
@@ -52,13 +61,14 @@
             >
               ×
             </button>
+            <!-- Display IMEI input length -->
             <transition name="fade">
               <div class="input-status" v-if="user.imei.length > 0">{{ user.imei.length }}/15</div>
             </transition>
             <span v-if="errors.imei" class="error">{{ errors.imei }}</span>
           </div>
-
           <div class="form-row">
+            <!-- Input for agreed price -->
             <label for="agreedPrice">Aftalt pris (DKK)</label>
             <input
               id="agreedPrice"
@@ -69,16 +79,19 @@
             <span v-if="errors.agreedPrice" class="error">{{ errors.agreedPrice }}</span>
           </div>
           <div class="form-row">
+            <!-- Input for notes -->
             <label for="notes">Bemærkninger</label>
             <textarea id="notes" v-model="user.notes"></textarea>
             <span v-if="errors.notes" class="error">{{ errors.notes }}</span>
           </div>
           <div class="form-row">
+            <!-- Input for customer's birthday -->
             <label for="birthday">Kundens fødselsdato (ddmmåå)</label>
             <input id="birthday" type="date" v-model="user.birthday" @input="validateBirthday" />
             <span v-if="errors.birthday" class="error">{{ errors.birthday }}</span>
           </div>
           <div class="form-row">
+            <!-- Input for customer's phone number -->
             <label for="phoneNumber">Kundens tlf.nummer</label>
             <input
               id="phoneNumber"
@@ -89,6 +102,7 @@
             <span v-if="errors.phoneNumber" class="error">{{ errors.phoneNumber }}</span>
           </div>
           <div class="form-row bank-details">
+            <!-- Inputs for customer's bank details -->
             <label>Kundens bankkonto</label>
             <div class="bank-inputs">
               <input
@@ -110,6 +124,7 @@
             <span v-if="errors.bankAccount" class="error">{{ errors.bankAccount }}</span>
           </div>
           <div class="form-row full-width">
+            <!-- Input for customer's name -->
             <label for="name">Kundens navn (blokbogstaver)</label>
             <input
               id="name"
@@ -121,15 +136,18 @@
             <span v-if="errors.name" class="error">{{ errors.name }}</span>
           </div>
           <div class="form-row">
+            <!-- Input for date -->
             <label for="date">Dato</label>
             <input id="date" type="date" v-model="user.date" @input="validateDate" />
             <span v-if="errors.date" class="error">{{ errors.date }}</span>
           </div>
         </div>
         <br />
+        <!-- Signature pad component -->
         <SignaturePad ref="signaturePad" :user="user" @update-signature="updateSignature" />
       </div>
       <div class="footer">
+        <!-- Footer information -->
         <p>
           Alle salg er endelige. Efter underskrift er der ikke fortrydelsesret på salg af brugt
           elektronik.
@@ -141,18 +159,24 @@
         </p>
       </div>
       <div class="button-container">
+        <!-- Button to go back -->
         <button @click="goBack" class="back-btn" aria-label="back">
           <span class="back-icon">←</span> Tilbage
         </button>
+        <!-- Button to print -->
         <button @click="print" class="add-btn" aria-label="print">Print</button>
+        <!-- Button to add user -->
         <button @click="addUser" class="add-btn" aria-label="add">Tilføj</button>
       </div>
+      <!-- Toast notification for success -->
       <Toast ref="toastSuccess" message="Success!" />
     </div>
+    <!-- Loading spinner and message, shown when loading -->
     <div v-else-if="loading" class="loading" aria-live="polite">
       <div class="spinner" aria-hidden="true"></div>
       <p>Indlæser brugeroplysninger...</p>
     </div>
+    <!-- Toast notification for errors -->
     <Toast
       v-show="error"
       ref="toast"
@@ -164,17 +188,18 @@
 
 <script>
 import axios from 'axios'
-import Toast from './ToastNotification.vue'
-import SignaturePad from './SignaturePad.vue'
+import Toast from '../components/ToastNotification.vue' // Import the Toast component
+import SignaturePad from '../components/SignaturePad.vue' // Import the SignaturePad component
 
 export default {
   name: 'UserInfo',
   components: {
-    Toast,
-    SignaturePad
+    Toast, // Register the Toast component
+    SignaturePad // Register the SignaturePad component
   },
   data() {
     return {
+      // User data object
       user: {
         id: null,
         imei: '',
@@ -189,13 +214,13 @@ export default {
         picture: 'https://icons.veryicon.com/png/o/internet--web/55-common-web-icons/person-4.png',
         signature: null
       },
-      loading: true,
-      error: false,
-      copiedField: null,
-      imeiError: '',
-      success: false,
-      errorMessage: '',
-      imageUrl: '',
+      loading: true, // Loading state
+      error: false, // Error state
+      copiedField: null, // Field that was copied
+      imeiError: '', // IMEI error message
+      success: false, // Success state
+      errorMessage: '', // Error message
+      imageUrl: '', // Image URL
       errors: {
         imei: '',
         model: '',
@@ -210,6 +235,7 @@ export default {
     }
   },
   methods: {
+    // Check if IMEI exists in the database
     async checkImeiExists(imei) {
       try {
         const response = await axios.get(
@@ -224,6 +250,7 @@ export default {
         }
       }
     },
+    // Fetch all users from the database
     async fetchUsers() {
       try {
         const response = await axios.get('https://imei-lookup-backend.onrender.com/api/users')
@@ -232,9 +259,11 @@ export default {
         throw new Error('Error fetching users: ' + error.message)
       }
     },
+    // Get the highest user ID from the list of users
     getHighestUserId(users) {
       return users.reduce((maxId, user) => Math.max(maxId, user.id), 0)
     },
+    // Create form data for the user
     createFormData(user, file, imageUrl) {
       const formData = new FormData()
       formData.append('id', user.id)
@@ -268,6 +297,7 @@ export default {
 
       return formData
     },
+    // Add a new user
     async addUser() {
       // Validate the form
       if (!this.validateForm()) {
@@ -333,12 +363,15 @@ export default {
         this.$refs.toast.show()
       }
     },
+    // Navigate back to the previous page
     goBack() {
       this.$router.push({ name: 'IMEILookup' })
     },
+    // Clear the IMEI input field
     clearIMEIInput() {
       this.user.imei = ''
     },
+    // Validate the IMEI input
     validateIMEI() {
       const imeiPattern = /^[0-9]{15}$/
       if (!this.user.imei) {
@@ -349,6 +382,7 @@ export default {
         this.errors.imei = ''
       }
     },
+    // Validate the model input
     validateModel() {
       if (!this.user.model) {
         this.errors.model = 'Model is required'
@@ -356,6 +390,7 @@ export default {
         this.errors.model = ''
       }
     },
+    // Validate the agreed price input
     validateAgreedPrice() {
       if (!this.user.agreedPrice || isNaN(this.user.agreedPrice)) {
         this.errors.agreedPrice = 'Agreed price must be a number'
@@ -363,6 +398,7 @@ export default {
         this.errors.agreedPrice = ''
       }
     },
+    // Validate the birthday input
     validateBirthday() {
       if (!this.user.birthday) {
         this.errors.birthday = 'Birthday is required'
@@ -370,6 +406,7 @@ export default {
         this.errors.birthday = ''
       }
     },
+    // Validate the phone number input
     validatePhoneNumber() {
       const phonePattern = /^\+?[0-9 ]+$/
       if (!phonePattern.test(this.user.phoneNumber)) {
@@ -378,6 +415,7 @@ export default {
         this.errors.phoneNumber = ''
       }
     },
+    // Validate the bank registration number input
     validateBankReg() {
       if (!this.user.bankReg) {
         this.errors.bankReg = 'Bank registration number is required'
@@ -385,6 +423,7 @@ export default {
         this.errors.bankReg = ''
       }
     },
+    // Validate the bank account number input
     validateBankAccount() {
       if (!this.user.bankAccount) {
         this.errors.bankAccount = 'Bank account number is required'
@@ -392,6 +431,7 @@ export default {
         this.errors.bankAccount = ''
       }
     },
+    // Validate the name input
     validateName() {
       if (!this.user.name) {
         this.errors.name = 'Name is required'
@@ -399,6 +439,7 @@ export default {
         this.errors.name = ''
       }
     },
+    // Validate the date input
     validateDate() {
       if (!this.user.date) {
         this.errors.date = 'Date is required'
@@ -406,6 +447,7 @@ export default {
         this.errors.date = ''
       }
     },
+    // Validate the entire form
     validateForm() {
       this.validateIMEI()
       this.validateModel()
@@ -419,9 +461,11 @@ export default {
 
       return Object.values(this.errors).every((error) => !error)
     },
+    // Trigger the file input for image upload
     triggerFileInput() {
       this.$refs.fileInput.click()
     },
+    // Handle the file upload for the user's picture
     handleFileUpload(event) {
       const file = event.target.files[0]
       if (file) {
@@ -432,19 +476,22 @@ export default {
         reader.readAsDataURL(file)
       }
     },
+    // Update the user's picture URL
     async updateImageUrl() {
       if (!this.imageUrl) return
       this.user.picture = this.imageUrl
     },
+    // Print the current page
     print() {
       window.print()
     },
+    // Update the user's signature
     updateSignature(signatureUrl) {
       this.user.signature = signatureUrl
     }
   },
   created() {
-    this.loading = false
+    this.loading = false // Set loading to false when the component is created
   }
 }
 </script>

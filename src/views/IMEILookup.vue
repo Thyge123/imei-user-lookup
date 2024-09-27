@@ -2,8 +2,10 @@
   <div class="imei-lookup">
     <div class="card">
       <h1>IMEI User Lookup</h1>
+      <!-- Form to lookup user by IMEI -->
       <form @submit.prevent="lookupUser">
         <div class="input-group" :class="{ 'input-error': error }">
+          <!-- Input field for IMEI number -->
           <input
             type="text"
             id="imei"
@@ -14,19 +16,23 @@
             aria-describedby="imeiHelp"
           />
           <label for="imei">IMEI Nummer</label>
+          <!-- Button to clear the input field -->
           <button type="button" class="clear-btn" @click="clearInput" v-if="imei.length > 0">
             ×
           </button>
+          <!-- Display IMEI input length -->
           <transition name="fade">
             <div class="input-status" v-if="imei.length > 0">{{ imei.length }}/15</div>
           </transition>
         </div>
+        <!-- Submit button to lookup user -->
         <button type="submit" :disabled="isLoading || !isValidIMEI" class="submit-btn">
           <span v-if="!isLoading">Søg</span>
           <div v-else class="spinner"></div>
         </button>
       </form>
 
+      <!-- Error message display -->
       <transition name="slide-fade">
         <div v-if="error" class="error-message">
           {{ error }}
@@ -34,6 +40,7 @@
         </div>
       </transition>
 
+      <!-- Display recent searches -->
       <transition name="fade">
         <div class="recent-searches" v-if="recentSearches.length > 0">
           <h2>Seneste Søgninger</h2>
@@ -48,11 +55,13 @@
               aria-label="Select recent search {{ search }}"
             >
               {{ search }}
+              <!-- Button to remove a recent search -->
               <button type="button" class="delete-btn" @click.stop="removeSearch(search)">×</button>
             </li>
           </transition-group>
         </div>
       </transition>
+      <!-- Button to route to add new user -->
       <button @click="RouteAddUser" class="add-user-btn">Opret ny</button>
     </div>
   </div>
@@ -65,18 +74,20 @@ export default {
   name: 'IMEILookup',
   data() {
     return {
-      imei: '',
-      isLoading: false,
-      error: null,
-      recentSearches: []
+      imei: '', // IMEI input value
+      isLoading: false, // Loading state
+      error: null, // Error message
+      recentSearches: [] // List of recent searches
     }
   },
   computed: {
+    // Check if the IMEI is valid
     isValidIMEI() {
       return this.imei.length === 15 && /^\d+$/.test(this.imei)
     }
   },
   methods: {
+    // Lookup user by IMEI
     async lookupUser() {
       this.error = null
 
@@ -102,10 +113,12 @@ export default {
         this.isLoading = false
       }
     },
+    // Validate the IMEI input
     validateInput() {
       this.imei = this.imei.replace(/[^0-9]/g, '').slice(0, 15)
       this.error = null
     },
+    // Add IMEI to recent searches
     addToRecentSearches(imei) {
       if (!this.recentSearches.includes(imei)) {
         this.recentSearches.unshift(imei)
@@ -115,22 +128,26 @@ export default {
         localStorage.setItem('recentSearches', JSON.stringify(this.recentSearches))
       }
     },
+    // Set IMEI input value
     setIMEI(imei) {
       this.imei = imei
     },
-
+    // Clear the IMEI input field
     clearInput() {
       this.imei = ''
     },
+    // Remove a recent search
     removeSearch(search) {
       this.recentSearches = this.recentSearches.filter((item) => item !== search)
       localStorage.setItem('recentSearches', JSON.stringify(this.recentSearches))
     },
+    // Route to add new user page
     RouteAddUser() {
       this.$router.push({ name: 'AddNew' })
     }
   },
   mounted() {
+    // Load recent searches from local storage
     const savedSearches = localStorage.getItem('recentSearches')
     if (savedSearches) {
       this.recentSearches = JSON.parse(savedSearches)

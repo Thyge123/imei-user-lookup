@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import axios from 'axios'
-import IMEILookup from '../src/components/IMEILookup.vue'
+import IMEILookup from '../src/views/IMEILookup.vue'
 import { describe, beforeEach, it, expect, vi } from 'vitest'
 
 vi.mock('axios')
