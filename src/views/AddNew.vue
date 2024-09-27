@@ -574,7 +574,7 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f5f7fa;
+  background-color: #f0f4f8;
   font-family: 'Roboto', sans-serif;
   padding: 20px;
 }

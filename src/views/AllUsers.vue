@@ -95,6 +95,7 @@ export default {
 .all-users {
   padding: 2rem;
   margin: auto;
+  background-color: #f0f4f8;
 }
 
 .all-users h1 {
