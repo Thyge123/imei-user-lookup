@@ -4,7 +4,7 @@
     <div class="controls">
       <input v-model="searchQuery" placeholder="Søg..." class="form-control" />
       <div class="sort-buttons">
-        <button @click="sortBy('name')" class="btn btn-secondary">Sorter efter Name</button>
+        <button @click="sortBy('name')" class="btn btn-secondary">Sorter efter Navn</button>
         <button @click="sortBy('date')" class="btn btn-secondary">Sort efter Dato</button>
       </div>
     </div>
