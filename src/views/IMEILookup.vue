@@ -105,7 +105,7 @@ export default {
         this.imei = ''
       } catch (error) {
         if (error.response && error.response.status === 404) {
-          this.error = 'Ingen bruger fundet med det givne IMEI-nummer.'
+          this.error = 'Ingen bruger fundet med det dette IMEI-nummer.'
         } else {
           this.error = 'Der opstod en fejl under søgning af brugeren. Prøv venligst igen.'
         }

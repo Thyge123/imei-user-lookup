@@ -1,6 +1,13 @@
 <template>
   <div class="all-users">
-    <h1>All Users</h1>
+    <h1>All Brugere</h1>
+    <div class="controls">
+      <input v-model="searchQuery" placeholder="Søg..." class="form-control" />
+      <div class="sort-buttons">
+        <button @click="sortBy('name')" class="btn btn-secondary">Sorter efter Name</button>
+        <button @click="sortBy('date')" class="btn btn-secondary">Sort efter Dato</button>
+      </div>
+    </div>
     <table class="table table-striped table-hover">
       <thead class="thead-dark">
         <tr>
@@ -14,8 +21,8 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Loop through users and display each user's details in a table row -->
-        <tr v-for="user in users" :key="user.id">
+        <!-- Loop through filtered and sorted users and display each user's details in a table row -->
+        <tr v-for="user in filteredAndSortedUsers" :key="user.id">
           <td>{{ user.name || 'N/A' }}</td>
           <td>{{ user.imei || 'N/A' }}</td>
           <td>{{ user.model || 'N/A' }}</td>
@@ -29,10 +36,10 @@
               class="btn btn-primary btn-sm"
               style="margin-right: 5px"
             >
-              Edit
+              Rediger
             </button>
             <!-- Delete button to remove the user -->
-            <button @click="deleteUser(user)" class="btn btn-danger btn-sm">Delete</button>
+            <button @click="deleteUser(user)" class="btn btn-danger btn-sm">Slet</button>
           </td>
         </tr>
       </tbody>
@@ -47,11 +54,36 @@ export default {
   name: 'AllUsers',
   data() {
     return {
-      users: [] // Array to store user data
+      users: [], // Array to store user data
+      searchQuery: '', // Search query for filtering users
+      sortKey: '', // Key to sort by
+      sortOrder: 1 // Sort order (1 for ascending, -1 for descending)
     }
   },
   created() {
     this.fetchUsers() // Fetch users when the component is created
+  },
+  computed: {
+    filteredAndSortedUsers() {
+      // Filter users based on search query
+      let filteredUsers = this.users.filter((user) => {
+        return Object.values(user).some((value) =>
+          String(value).toLowerCase().includes(this.searchQuery.toLowerCase())
+        )
+      })
+
+      // Sort users based on sort key and order
+      if (this.sortKey) {
+        filteredUsers.sort((a, b) => {
+          let result = 0
+          if (a[this.sortKey] < b[this.sortKey]) result = -1
+          if (a[this.sortKey] > b[this.sortKey]) result = 1
+          return result * this.sortOrder
+        })
+      }
+
+      return filteredUsers
+    }
   },
   methods: {
     async fetchUsers() {
@@ -86,6 +118,15 @@ export default {
       const month = String(date.getMonth() + 1).padStart(2, '0') // Add leading zeros to the month
       const year = date.getFullYear() // Get the year
       return `${day}-${month}-${year}` // Return the formatted date
+    },
+    sortBy(key) {
+      // Toggle sort order if the same key is clicked
+      if (this.sortKey === key) {
+        this.sortOrder *= -1
+      } else {
+        this.sortKey = key
+        this.sortOrder = 1
+      }
     }
   }
 }
@@ -103,6 +144,24 @@ export default {
   text-align: center;
   font-size: 2rem;
   color: #333;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.form-control {
+  width: 50%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.sort-buttons {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .table {
@@ -156,6 +215,15 @@ export default {
 
 .btn-danger:hover {
   background-color: #c82333;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
 }
 
 @media (max-width: 768px) {
